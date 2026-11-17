@@ -1,0 +1,25 @@
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+*.log
+.env
+.env.*
+!.env.example
+
+# Capacitor native projects (generated)
+apps/mobile-web/android/
+apps/mobile-web/ios/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
