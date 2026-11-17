@@ -142,8 +142,7 @@ export type ConditionNode = Condition | AllNode | AnyNode | RefNode;
 
 /** 첫 번째로 when이 true인 선택지를 씁니다. when이 없으면 기본값입니다. */
 export type LimitOption =
-  | { when?: ConditionNode; amount: Won }
-  | { when?: ConditionNode; ratio: number; of: string };
+  { when?: ConditionNode; amount: Won } | { when?: ConditionNode; ratio: number; of: string };
 
 /** 한도 항목 하나 (예: 호당 한도, LTV). 최종 한도는 모든 항목의 최솟값입니다. */
 export interface LimitCap {
@@ -160,8 +159,7 @@ export interface LimitSpec {
 
 /** 금리표 열 구분: 대출기간(사용자 선택) 또는 fact 구간(예: 보증금) */
 export type RateColumns =
-  | { kind: 'term'; years: number[] }
-  | { kind: 'fact'; fact: string; upTo: (Won | null)[] };
+  { kind: 'term'; years: number[] } | { kind: 'fact'; fact: string; upTo: (Won | null)[] };
 
 export interface RateTable {
   /** 행 구분 fact (예: income.combined) */

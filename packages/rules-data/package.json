@@ -1,0 +1,21 @@
+{
+  "name": "@jipgak/rules-data",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema.json": "./schema.json",
+    "./products/*": "./products/*"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "validate": "vitest run test/schema.test.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "ajv": "^8.20.0"
+  }
+}

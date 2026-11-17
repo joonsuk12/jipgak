@@ -1,0 +1,408 @@
+{
+  "$schema": "../schema.json",
+  "id": "loan-newlywed-jeonse",
+  "name": "신혼부부전용 전세자금",
+  "category": "loan",
+  "effectiveFrom": "2026-11-17",
+  "source": {
+    "title": "주택도시기금 신혼부부전용 전세자금",
+    "url": "https://nhuf.molit.go.kr/FP/FP05/FP0502/FP05020401.jsp",
+    "checkedAt": "2026-11-17"
+  },
+  "definitions": {
+    "singleIncomeBasis": {
+      "all": [
+        {
+          "id": "combinedOver",
+          "label": "부부합산 연소득 7,500만 원 초과",
+          "fact": "income.combined",
+          "op": ">",
+          "value": 75000000
+        },
+        {
+          "id": "applicantWithin",
+          "label": "신청인 연소득 5,000만 원 이하",
+          "fact": "applicant.income",
+          "op": "<=",
+          "value": 50000000
+        }
+      ]
+    }
+  },
+  "conditions": {
+    "all": [
+      {
+        "id": "noDuplicateLoan",
+        "label": "기금대출·은행 전세자금대출·주택담보대출 미이용",
+        "all": [
+          {
+            "id": "noFundLoan",
+            "label": "기금대출 미이용",
+            "fact": "household.hasFundLoan",
+            "op": "==",
+            "value": false
+          },
+          {
+            "id": "noJeonseLoan",
+            "label": "은행 전세자금대출 미이용",
+            "fact": "household.hasJeonseLoan",
+            "op": "==",
+            "value": false
+          },
+          {
+            "id": "noMortgageLoan",
+            "label": "주택담보대출 미이용",
+            "fact": "household.hasMortgageLoan",
+            "op": "==",
+            "value": false
+          }
+        ]
+      },
+      {
+        "id": "contract",
+        "label": "주택임대차계약 체결 및 보증금 5% 이상 지불",
+        "fact": "jeonse.contractSigned",
+        "op": "==",
+        "value": true
+      },
+      {
+        "id": "allHomeless",
+        "label": "세대원 전원 무주택",
+        "fact": "household.allHomeless",
+        "op": "==",
+        "value": true
+      },
+      {
+        "id": "income",
+        "label": "부부합산 연소득 7,500만 원 이하 (초과 시 신청인 1인 소득 5,000만 원 이하)",
+        "any": [
+          {
+            "id": "combinedIncome",
+            "label": "부부합산 연소득 7,500만 원 이하",
+            "fact": "income.combined",
+            "op": "<=",
+            "value": 75000000
+          },
+          {
+            "id": "applicantIncome",
+            "label": "신청인 1인 연소득 5,000만 원 이하",
+            "fact": "applicant.income",
+            "op": "<=",
+            "value": 50000000
+          }
+        ]
+      },
+      {
+        "id": "netAssets",
+        "label": "부부합산 순자산 3.45억 원 이하",
+        "fact": "assets.net",
+        "op": "<=",
+        "value": 345000000
+      },
+      {
+        "id": "noPublicRental",
+        "label": "공공임대주택 미거주",
+        "fact": "household.livesInPublicRental",
+        "op": "==",
+        "value": false
+      },
+      {
+        "id": "newlywed",
+        "label": "혼인기간 7년 이내 또는 3개월 이내 결혼 예정",
+        "any": [
+          {
+            "all": [
+              {
+                "id": "isMarried",
+                "label": "기혼",
+                "fact": "marriage.status",
+                "op": "==",
+                "value": "married"
+              },
+              {
+                "id": "marriedWithin7y",
+                "label": "혼인기간 7년 이내",
+                "fact": "marriage.date",
+                "op": "withinPast",
+                "value": "P7Y"
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "id": "isPlanned",
+                "label": "결혼 예정",
+                "fact": "marriage.status",
+                "op": "==",
+                "value": "planned"
+              },
+              {
+                "id": "weddingWithin3m",
+                "label": "3개월 이내 결혼 예정",
+                "fact": "marriage.date",
+                "op": "withinNext",
+                "value": "P3M"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "area",
+        "label": "임차 전용면적 85㎡ 이하 (수도권 외 도시지역이 아닌 읍·면은 100㎡ 이하)",
+        "any": [
+          {
+            "id": "areaStandard",
+            "label": "전용면적 85㎡ 이하",
+            "fact": "jeonse.areaM2",
+            "op": "<=",
+            "value": 85
+          },
+          {
+            "all": [
+              {
+                "id": "nonMetro",
+                "label": "수도권 외",
+                "fact": "jeonse.metro",
+                "op": "==",
+                "value": false
+              },
+              {
+                "id": "ruralTownship",
+                "label": "도시지역이 아닌 읍·면",
+                "fact": "jeonse.ruralTownship",
+                "op": "==",
+                "value": true
+              },
+              {
+                "id": "areaRural",
+                "label": "전용면적 100㎡ 이하",
+                "fact": "jeonse.areaM2",
+                "op": "<=",
+                "value": 100
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "deposit",
+        "label": "임차보증금 수도권 4억 원, 수도권 외 3억 원 이하",
+        "any": [
+          {
+            "all": [
+              {
+                "id": "metro",
+                "label": "수도권",
+                "fact": "jeonse.metro",
+                "op": "==",
+                "value": true
+              },
+              {
+                "id": "depositMetro",
+                "label": "보증금 4억 원 이하",
+                "fact": "jeonse.deposit",
+                "op": "<=",
+                "value": 400000000
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "id": "nonMetro",
+                "label": "수도권 외",
+                "fact": "jeonse.metro",
+                "op": "==",
+                "value": false
+              },
+              {
+                "id": "depositNonMetro",
+                "label": "보증금 3억 원 이하",
+                "fact": "jeonse.deposit",
+                "op": "<=",
+                "value": 300000000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "limit": {
+    "caps": [
+      {
+        "id": "perHousehold",
+        "label": "호당 한도 (수도권 2.5억 원, 수도권 외 1.6억 원)",
+        "options": [
+          {
+            "when": {
+              "all": [
+                {
+                  "id": "contractBefore20250627",
+                  "label": "2025-06-27 이전 계약",
+                  "fact": "jeonse.contractDate",
+                  "op": "<",
+                  "value": "2025-06-27"
+                },
+                {
+                  "id": "metro",
+                  "label": "수도권",
+                  "fact": "jeonse.metro",
+                  "op": "==",
+                  "value": true
+                }
+              ]
+            },
+            "amount": 300000000
+          },
+          {
+            "when": {
+              "id": "contractBefore20250627",
+              "label": "2025-06-27 이전 계약",
+              "fact": "jeonse.contractDate",
+              "op": "<",
+              "value": "2025-06-27"
+            },
+            "amount": 200000000
+          },
+          {
+            "when": {
+              "id": "metro",
+              "label": "수도권",
+              "fact": "jeonse.metro",
+              "op": "==",
+              "value": true
+            },
+            "amount": 250000000
+          },
+          { "amount": 160000000 }
+        ]
+      },
+      {
+        "id": "depositRatio",
+        "label": "전세금의 80% (신규계약)",
+        "options": [{ "ratio": 0.8, "of": "jeonse.deposit" }]
+      }
+    ]
+  },
+  "rate": {
+    "table": {
+      "rowFact": "income.combined",
+      "rowUpTo": [20000000, 40000000, 60000000, 75000000],
+      "columns": {
+        "kind": "fact",
+        "fact": "jeonse.deposit",
+        "upTo": [50000000, 100000000, 150000000, null]
+      },
+      "rates": [
+        [1.9, 2.0, 2.1, 2.2],
+        [2.2, 2.3, 2.4, 2.5],
+        [2.6, 2.7, 2.8, 2.9],
+        [3.0, 3.1, 3.2, 3.3]
+      ]
+    },
+    "topRowWhen": { "ref": "singleIncomeBasis" },
+    "adjustments": [
+      {
+        "id": "nonMetro",
+        "label": "지방 소재 주택 −0.2%p",
+        "when": {
+          "id": "nonMetro",
+          "label": "수도권 외",
+          "fact": "jeonse.metro",
+          "op": "==",
+          "value": false
+        },
+        "deltaPp": -0.2
+      },
+      {
+        "id": "singleIncome",
+        "label": "1인 소득 기준 신청: 보증금별 최고금리 +0.3%p",
+        "when": { "ref": "singleIncomeBasis" },
+        "deltaPp": 0.3
+      }
+    ],
+    "discounts": [
+      {
+        "id": "children",
+        "label": "자녀 우대",
+        "options": [
+          {
+            "when": {
+              "id": "children3",
+              "label": "다자녀",
+              "fact": "children.count",
+              "op": ">=",
+              "value": 3
+            },
+            "pp": 0.7
+          },
+          {
+            "when": {
+              "id": "children2",
+              "label": "2자녀",
+              "fact": "children.count",
+              "op": "==",
+              "value": 2
+            },
+            "pp": 0.5
+          },
+          {
+            "when": {
+              "id": "children1",
+              "label": "1자녀",
+              "fact": "children.count",
+              "op": "==",
+              "value": 1
+            },
+            "pp": 0.3
+          }
+        ]
+      }
+    ],
+    "discountCap": {
+      "default": 0.5,
+      "overrides": [
+        {
+          "when": {
+            "id": "children3",
+            "label": "다자녀",
+            "fact": "children.count",
+            "op": ">=",
+            "value": 3
+          },
+          "value": 0.7
+        }
+      ]
+    },
+    "floor": 1.0
+  },
+  "notes": [
+    {
+      "id": "singleIncome",
+      "when": { "ref": "singleIncomeBasis" },
+      "text": "1인 소득 기준 적용, 금리 +0.3%p (최초 신규 시)"
+    },
+    {
+      "id": "plannedMarriage",
+      "when": {
+        "id": "isPlanned",
+        "label": "결혼 예정",
+        "fact": "marriage.status",
+        "op": "==",
+        "value": "planned"
+      },
+      "text": "결혼예정자는 대출 후 3개월 내 배우자가 등재된 주민등록등본을 제출해야 합니다(최장 6개월 연장)."
+    }
+  ],
+  "manualChecks": [
+    "신용도: 연체 등 신용정보 결격 사유가 없어야 합니다.",
+    "민법상 성년 세대주여야 합니다(1개월 내 세대주 예정자, 세대주의 배우자, 3개월 내 결혼으로 세대주 예정인 자 포함).",
+    "공공임대주택 입주 중이어도 해당 주택이 대출 목적물이거나 퇴거하는 경우는 가능합니다.",
+    "중복대출 금지에는 임차중도금 대출 등 예외가 있습니다.",
+    "담보별 한도(HF·HUG 보증 규정 등)에 따라 실제 한도가 예상 한도보다 낮을 수 있습니다.",
+    "예상 한도는 신규계약 기준입니다. 갱신계약은 증액분 이내(증액 후 총보증금의 80% 이내)입니다."
+  ]
+}

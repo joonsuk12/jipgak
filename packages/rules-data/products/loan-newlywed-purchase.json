@@ -1,0 +1,431 @@
+{
+  "$schema": "../schema.json",
+  "id": "loan-newlywed-purchase",
+  "name": "신혼부부전용 구입자금",
+  "category": "loan",
+  "effectiveFrom": "2026-11-17",
+  "source": {
+    "title": "주택도시기금 신혼부부전용 구입자금",
+    "url": "https://nhuf.molit.go.kr/FP/FP05/FP0503/FP05030601.jsp",
+    "checkedAt": "2026-11-17"
+  },
+  "definitions": {
+    "singleIncomeBasis": {
+      "all": [
+        {
+          "id": "combinedOver",
+          "label": "부부합산 연소득 8,500만 원 초과",
+          "fact": "income.combined",
+          "op": ">",
+          "value": 85000000
+        },
+        {
+          "id": "applicantWithin",
+          "label": "신청인 연소득 6,000만 원 이하",
+          "fact": "applicant.income",
+          "op": "<=",
+          "value": 60000000
+        }
+      ]
+    }
+  },
+  "conditions": {
+    "all": [
+      {
+        "id": "contract",
+        "label": "주택매매계약 체결",
+        "fact": "purchase.contractSigned",
+        "op": "==",
+        "value": true
+      },
+      {
+        "id": "allHomeless",
+        "label": "세대원 전원 무주택",
+        "fact": "household.allHomeless",
+        "op": "==",
+        "value": true
+      },
+      {
+        "id": "noDuplicateLoan",
+        "label": "기금대출·은행 주택담보대출 미이용",
+        "all": [
+          {
+            "id": "noFundLoan",
+            "label": "기금대출 미이용",
+            "fact": "household.hasFundLoan",
+            "op": "==",
+            "value": false
+          },
+          {
+            "id": "noMortgageLoan",
+            "label": "은행 주택담보대출 미이용",
+            "fact": "household.hasMortgageLoan",
+            "op": "==",
+            "value": false
+          }
+        ]
+      },
+      {
+        "id": "income",
+        "label": "부부합산 연소득 8,500만 원 이하 (초과 시 신청인 1인 소득 6,000만 원 이하)",
+        "any": [
+          {
+            "id": "combinedIncome",
+            "label": "부부합산 연소득 8,500만 원 이하",
+            "fact": "income.combined",
+            "op": "<=",
+            "value": 85000000
+          },
+          {
+            "id": "applicantIncome",
+            "label": "신청인 1인 연소득 6,000만 원 이하",
+            "fact": "applicant.income",
+            "op": "<=",
+            "value": 60000000
+          }
+        ]
+      },
+      {
+        "id": "netAssets",
+        "label": "부부합산 순자산 5.11억 원 이하",
+        "fact": "assets.net",
+        "op": "<=",
+        "value": 511000000
+      },
+      {
+        "id": "newlywed",
+        "label": "혼인기간 7년 이내 또는 3개월 이내 결혼 예정",
+        "any": [
+          {
+            "all": [
+              {
+                "id": "isMarried",
+                "label": "기혼",
+                "fact": "marriage.status",
+                "op": "==",
+                "value": "married"
+              },
+              {
+                "id": "marriedWithin7y",
+                "label": "혼인기간 7년 이내",
+                "fact": "marriage.date",
+                "op": "withinPast",
+                "value": "P7Y"
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "id": "isPlanned",
+                "label": "결혼 예정",
+                "fact": "marriage.status",
+                "op": "==",
+                "value": "planned"
+              },
+              {
+                "id": "weddingWithin3m",
+                "label": "3개월 이내 결혼 예정",
+                "fact": "marriage.date",
+                "op": "withinNext",
+                "value": "P3M"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "firstHome",
+        "label": "생애최초 주택구입 (세대원 전원 주택 보유 이력 없음)",
+        "fact": "household.everOwnedHome",
+        "op": "==",
+        "value": false
+      },
+      {
+        "id": "area",
+        "label": "전용면적 85㎡ 이하 (수도권 외 도시지역이 아닌 읍·면은 100㎡ 이하)",
+        "any": [
+          {
+            "id": "areaStandard",
+            "label": "전용면적 85㎡ 이하",
+            "fact": "purchase.areaM2",
+            "op": "<=",
+            "value": 85
+          },
+          {
+            "all": [
+              {
+                "id": "nonMetro",
+                "label": "수도권 외",
+                "fact": "purchase.metro",
+                "op": "==",
+                "value": false
+              },
+              {
+                "id": "ruralTownship",
+                "label": "도시지역이 아닌 읍·면",
+                "fact": "purchase.ruralTownship",
+                "op": "==",
+                "value": true
+              },
+              {
+                "id": "areaRural",
+                "label": "전용면적 100㎡ 이하",
+                "fact": "purchase.areaM2",
+                "op": "<=",
+                "value": 100
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "price",
+        "label": "주택 평가액 6억 원 이하",
+        "fact": "purchase.price",
+        "op": "<=",
+        "value": 600000000
+      }
+    ]
+  },
+  "limit": {
+    "caps": [
+      {
+        "id": "perHousehold",
+        "label": "호당 한도",
+        "options": [
+          {
+            "when": {
+              "id": "contractBefore20250627",
+              "label": "2025-06-27 이전 계약",
+              "fact": "purchase.contractDate",
+              "op": "<",
+              "value": "2025-06-27"
+            },
+            "amount": 400000000
+          },
+          { "amount": 320000000 }
+        ]
+      },
+      {
+        "id": "ltv",
+        "label": "LTV (수도권·규제지역 70%, 그 외 80%)",
+        "options": [
+          {
+            "when": {
+              "any": [
+                {
+                  "id": "metro",
+                  "label": "수도권",
+                  "fact": "purchase.metro",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "id": "regulated",
+                  "label": "규제지역",
+                  "fact": "purchase.regulated",
+                  "op": "==",
+                  "value": true
+                }
+              ]
+            },
+            "ratio": 0.7,
+            "of": "purchase.price"
+          },
+          { "ratio": 0.8, "of": "purchase.price" }
+        ]
+      },
+      {
+        "id": "price",
+        "label": "매매가격 이내",
+        "options": [{ "ratio": 1, "of": "purchase.price" }]
+      }
+    ]
+  },
+  "rate": {
+    "table": {
+      "rowFact": "income.combined",
+      "rowUpTo": [20000000, 40000000, 70000000, 85000000],
+      "columns": { "kind": "term", "years": [10, 15, 20, 30] },
+      "rates": [
+        [2.55, 2.65, 2.75, 2.8],
+        [2.9, 3.0, 3.1, 3.15],
+        [3.25, 3.35, 3.45, 3.5],
+        [3.6, 3.7, 3.8, 3.85]
+      ]
+    },
+    "topRowWhen": { "ref": "singleIncomeBasis" },
+    "adjustments": [
+      {
+        "id": "nonMetro",
+        "label": "지방 소재 주택 −0.2%p",
+        "when": {
+          "id": "nonMetro",
+          "label": "수도권 외",
+          "fact": "purchase.metro",
+          "op": "==",
+          "value": false
+        },
+        "deltaPp": -0.2
+      },
+      {
+        "id": "singleIncome",
+        "label": "1인 소득 기준 신청: 만기별 최고금리 +0.3%p",
+        "when": { "ref": "singleIncomeBasis" },
+        "deltaPp": 0.3
+      }
+    ],
+    "discounts": [
+      {
+        "id": "children",
+        "label": "자녀 우대",
+        "options": [
+          {
+            "when": {
+              "id": "children3",
+              "label": "다자녀",
+              "fact": "children.count",
+              "op": ">=",
+              "value": 3
+            },
+            "pp": 0.7
+          },
+          {
+            "when": {
+              "id": "children2",
+              "label": "2자녀",
+              "fact": "children.count",
+              "op": "==",
+              "value": 2
+            },
+            "pp": 0.5
+          },
+          {
+            "when": {
+              "id": "children1",
+              "label": "1자녀",
+              "fact": "children.count",
+              "op": "==",
+              "value": 1
+            },
+            "pp": 0.3
+          }
+        ]
+      },
+      {
+        "id": "subscription",
+        "label": "청약저축 가입 우대",
+        "options": [
+          {
+            "when": {
+              "all": [
+                {
+                  "id": "sub15y",
+                  "label": "가입 15년 이상",
+                  "fact": "subscription.years",
+                  "op": ">=",
+                  "value": 15
+                },
+                {
+                  "id": "sub180",
+                  "label": "납입 180회 이상",
+                  "fact": "subscription.paymentCount",
+                  "op": ">=",
+                  "value": 180
+                }
+              ]
+            },
+            "pp": 0.5
+          },
+          {
+            "when": {
+              "all": [
+                {
+                  "id": "sub10y",
+                  "label": "가입 10년 이상",
+                  "fact": "subscription.years",
+                  "op": ">=",
+                  "value": 10
+                },
+                {
+                  "id": "sub120",
+                  "label": "납입 120회 이상",
+                  "fact": "subscription.paymentCount",
+                  "op": ">=",
+                  "value": 120
+                }
+              ]
+            },
+            "pp": 0.4
+          },
+          {
+            "when": {
+              "all": [
+                {
+                  "id": "sub5y",
+                  "label": "가입 5년 이상",
+                  "fact": "subscription.years",
+                  "op": ">=",
+                  "value": 5
+                },
+                {
+                  "id": "sub60",
+                  "label": "납입 60회 이상",
+                  "fact": "subscription.paymentCount",
+                  "op": ">=",
+                  "value": 60
+                }
+              ]
+            },
+            "pp": 0.3
+          }
+        ]
+      }
+    ],
+    "discountCap": {
+      "default": 0.5,
+      "overrides": [
+        {
+          "when": {
+            "id": "children3",
+            "label": "다자녀",
+            "fact": "children.count",
+            "op": ">=",
+            "value": 3
+          },
+          "value": 0.7
+        }
+      ]
+    },
+    "floor": 1.2
+  },
+  "notes": [
+    {
+      "id": "singleIncome",
+      "when": { "ref": "singleIncomeBasis" },
+      "text": "1인 소득 기준 적용, 금리 +0.3%p"
+    },
+    {
+      "id": "plannedMarriage",
+      "when": {
+        "id": "isPlanned",
+        "label": "결혼 예정",
+        "fact": "marriage.status",
+        "op": "==",
+        "value": "planned"
+      },
+      "text": "결혼예정자는 대출 후 3개월 내 배우자가 등재된 주민등록등본을 제출해야 합니다(사유서 제출 시 최장 6개월)."
+    }
+  ],
+  "manualChecks": [
+    "신용도: 연체·대위변제·부도 등 신용정보가 없어야 합니다.",
+    "민법상 성년 세대주여야 합니다(세대주의 배우자, 3개월 이내 결혼으로 세대주 예정인 자 포함).",
+    "상속·증여·재산분할로 취득하는 주택은 대상이 아닙니다.",
+    "분양권·조합원 입주권도 주택으로 봅니다(무주택 판단 시).",
+    "생애최초: 기금 구입자금·중도금 대출 이용 이력(상환 포함)이 없어야 합니다.",
+    "기금 전세대출은 대출실행일 당일 상환 조건이면 이용 중이어도 신청할 수 있습니다.",
+    "DTI 60% 이내여야 합니다(1인 소득 기준 신청 시 그 1인의 소득·부채로 계산).",
+    "예상 한도는 선순위채권·임대보증금을 0으로 가정한 값입니다."
+  ]
+}
