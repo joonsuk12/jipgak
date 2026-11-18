@@ -70,6 +70,12 @@ pnpm --filter @jipgak/rules-engine exec vitest run -t "P01"             # 이름
 - 서버 모드(`api`) 구현은 해당 단계 전까지 만들지 않습니다. 인터페이스만 둡니다.
 - 진행사항은 작업 도중에도 `docs/STATUS.md`에 갱신하고 커밋합니다. 중단되더라도 다음 세션이 바로 이어받을 수 있게 합니다.
 
+## 스킬
+
+- **화면(UI) 작업:** 새 화면을 만들거나 기존 화면을 바꿀 때는 `frontend-design` 스킬을 먼저 불러옵니다. 비슷한 `design-taste-frontend`는 쓰지 않습니다.
+- **출처 재검증·규칙 수정:** `.claude/skills/rule-update` 절차를 따릅니다.
+- **점검:** 단계를 마칠 때 `/code-review`, 배포 전에는 `/security-review`를 실행합니다(입력값 무전송 원칙 확인).
+
 ## 토큰 절약 수칙
 
 - `node_modules/`, `dist/`, `android/`, `ios/`, `*.lock`은 읽거나 검색하지 않습니다.
