@@ -4,8 +4,9 @@
 
 | 파일 | 상품 | 단계 | 확인일 |
 |---|---|---|---|
-| [newlywed-purchase.md](newlywed-purchase.md) | 신혼부부전용 구입자금 | v1 | 2026-11-17 |
-| [newlywed-jeonse.md](newlywed-jeonse.md) | 신혼부부전용 전세자금 | v1 | 2026-11-17 |
+| [newlywed-purchase.md](newlywed-purchase.md) | 신혼부부전용 구입자금 | v1 | 2026-11-17 (2026-11-18 재검증) |
+| [newlywed-jeonse.md](newlywed-jeonse.md) | 신혼부부전용 전세자금 | v1 | 2026-11-17 (2026-11-18 재검증) |
+| [income-and-assets.md](income-and-assets.md) | 소득·순자산·자녀 산정 기준 (공통) | v1 | 2026-11-18 |
 
 ## 다음 후보 (v1.x ~ v2)
 

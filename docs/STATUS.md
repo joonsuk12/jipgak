@@ -11,6 +11,7 @@
 - [x] 판정 테스트 화면 (2026-11-18): `apps/mobile-web/src/screens/playground/`. 골든 케이스 프리셋을 불러와 입력을 바꾸면 즉시 다시 판정. 프리셋 = 골든 기대값 테스트 포함. `pnpm --filter @jipgak/mobile-web dev`로 실행
 - [x] 사용자 검토 항목 정리: `docs/REVIEW.md`
 - [x] 계약 체결·전세 담보별 한도를 "가능 + 안내"로 변경 (D-15, 2026-11-18). 골든 P13·J11 추가
+- [x] 원문 재검증 (2026-11-18, D-17): 두 상품 수치 모두 일치. 소득·순자산·다자녀 산정 기준을 `docs/sources/income-and-assets.md`로 추가, 골든 케이스에 원문 근거 표 추가
 - [x] 용어집 `docs/GLOSSARY.md` (2026-11-18): 용어별 💬 한 줄 안내 + 상세 설명 + 개발자 메모. ★ = 화면에 항상 표시. 정책 수치는 sources 참조
 - [x] v0 (2026-11-17~18): 모노레포, 엔진(`types`·`dates`·`facts`·`conditions`·`evaluate`·`limit`), 규칙 스키마와 상품 규칙 2개, 골든 테스트(P·J·R 전부 통과, 모순으로 보류한 케이스 없음), mobile-web 뼈대와 데이터 어댑터, `public-config/config.json`, CI
 
@@ -24,6 +25,7 @@
 7. [ ] Cloudflare Pages 배포(`*.pages.dev`), 면책 문구, 개인정보 처리방침, 분석(입력값 제외)
 
 ## 다음 세션 메모
+- 다음 출처 재검증 예정: 2027-02 (분기, D-17). 2027년도 순자산 기준은 통계청 발표 후 바뀜
 - pnpm은 `corepack enable pnpm --install-directory "$APPDATA/npm"`로 설치함 (Program Files 쓰기 권한 없음). pnpm 12.21.0
 - TypeScript는 6.0으로 고정 (typescript-eslint가 TS 7 미지원). Vite 8, Vitest 5, Tailwind 4, ESLint 10
 - 골든 테스트 기본 프로필: 계약 체결(상태에는 영향 없음, D-15), 지방 케이스는 `regulated: false`, R 케이스는 `computeRate(...).baseRate`로 검증, J09는 합산 5,000을 3,000+2,000으로 나눔
@@ -32,7 +34,7 @@
 ## 사용자 TODO
 - [ ] KIPRIS 상표 검색으로 "집각" 확인
 - [ ] `jipgak.kr` 또는 `jipgak.com` 도메인 구매
-- [ ] 골든 케이스 기대값 검토
+- [ ] 골든 케이스: 원문 대조는 끝남. `docs/REVIEW.md` 3번의 남은 제품 판단 1건만 확인
 - [ ] GitHub 원격 레포 생성 (비공개 권장) 후 push
 
 ## 확인 필요 (정책·규칙)
@@ -43,5 +45,5 @@
 - 구입자금 DTI 60%는 부채 입력이 없어 v1에서 `manualChecks`로 처리
 - "민법상 성년 세대주"는 소스에 나이 수치가 없어 조건 대신 `manualChecks`로 안내
 - 생애최초의 "기금 구입·중도금 대출 이력 없음"은 입력 항목이 없어 `manualChecks`로 안내
-- 우대금리 "다자녀"를 3자녀 이상으로 해석 (1자녀·2자녀가 따로 있어서)
+- 다자녀 = 만 19세 미만 자녀 3인 이상(원문 FAQ 확인). 엔진은 나이를 따지지 않고 자녀 수로 판정
 - 계약일을 모르면 2025-06-27 이후 계약(현행 호당 한도)으로 계산
