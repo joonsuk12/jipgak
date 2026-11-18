@@ -8,10 +8,12 @@
 - [x] 기획·아키텍처·결정 문서 작성 (2026-11-17)
 - [x] v1 대상 2개 상품 공식 출처 요약 (`docs/sources/`, 2026-11-17 확인)
 - [x] 골든 케이스 초안 (`docs/golden-cases.md`) — 사용자 검토 필요
+- [x] 판정 테스트 화면 (2026-11-18): `apps/mobile-web/src/screens/playground/`. 골든 케이스 프리셋을 불러와 입력을 바꾸면 즉시 다시 판정. 프리셋 = 골든 기대값 테스트 포함. `pnpm --filter @jipgak/mobile-web dev`로 실행
+- [x] 사용자 검토 항목 정리: `docs/REVIEW.md`
 - [x] v0 (2026-11-17~18): 모노레포, 엔진(`types`·`dates`·`facts`·`conditions`·`evaluate`·`limit`), 규칙 스키마와 상품 규칙 2개, 골든 테스트(P·J·R 전부 통과, 모순으로 보류한 케이스 없음), mobile-web 뼈대와 데이터 어댑터, `public-config/config.json`, CI
 
 ## 다음 할 일 (v1, 위에서부터 순서대로)
-1. [ ] 사용자 검토 반영: 골든 케이스 기대값, 아래 "확인 필요" 항목(특히 계약 전 판정을 어떻게 보여 줄지)
+1. [ ] 사용자 검토 반영: `docs/REVIEW.md`의 A 항목(1-1 계약 전 판정, 2-1 전세 담보별 한도)부터. 결정은 DECISIONS로 옮김
 2. [ ] GitHub 원격 레포 push 후 CI 첫 실행 확인 (로컬에서는 같은 명령이 모두 통과, Actions에서는 아직 실행 전)
 3. [ ] `rules-data/build.ts`: 규칙 번들 `rules-<version>.json` + `manifest.json`(버전, 해시) 생성, `StaticRulesSource`에 manifest 확인·로컬 캐시 추가
 4. [ ] 화면: 목적 선택 → 입력 위저드("모름" 허용) → 결과 목록 → 상세(조건별 체크리스트, 근거 링크, 예상 한도·금리 범위)
@@ -31,6 +33,9 @@
 - [ ] GitHub 원격 레포 생성 (비공개 권장) 후 push
 
 ## 확인 필요 (정책·규칙)
+
+> 선택지와 우선순위까지 정리한 목록은 `docs/REVIEW.md`에 있습니다.
+
 - 구입자금의 "만 30세 미만 단독세대주 제외"는 신혼·예비부부에게 해당하지 않는 것으로 보고 v1에서 생략
 - 구입자금 DTI 60%는 부채 입력이 없어 v1에서 `manualChecks`로 처리
 - 전세자금 "담보별 한도"는 소스에 `needs_check`로 안내한다고 되어 있으나, 골든 J01이 eligible이므로 DTI와 같게 `manualChecks`로 처리
