@@ -209,7 +209,11 @@ importers:
         specifier: ^8.20.0
         version: 8.20.0
 
-  packages/rules-engine: {}
+  packages/rules-engine:
+    devDependencies:
+      '@jipgak/rules-data':
+        specifier: workspace:*
+        version: link:../rules-data
 
 packages:
 

@@ -42,19 +42,22 @@ function compare(actual: FactValue, cond: Condition, ctx: EvalContext): Truth {
       `${cond.id}: fact ${cond.fact}(${typeof actual})와 기준값(${typeof expected})의 타입이 다릅니다`,
     );
   }
+  if (cond.op === '==') return actual === expected;
+  if (cond.op === '!=') return actual !== expected;
+  if (typeof actual === 'boolean' || typeof expected === 'boolean') {
+    throw new Error(`${cond.id}: 참/거짓 값에는 ==, != 만 쓸 수 있습니다`);
+  }
+  // 문자열은 'YYYY-MM-DD' 날짜 비교에 씁니다(사전순 = 날짜순).
+  const [a, b] = [actual, expected] as [number, number] | [string, string];
   switch (cond.op) {
-    case '==':
-      return actual === expected;
-    case '!=':
-      return actual !== expected;
     case '<=':
-      return actual <= expected;
+      return a <= b;
     case '<':
-      return actual < expected;
+      return a < b;
     case '>=':
-      return actual >= expected;
+      return a >= b;
     case '>':
-      return actual > expected;
+      return a > b;
   }
 }
 

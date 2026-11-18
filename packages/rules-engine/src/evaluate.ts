@@ -78,7 +78,11 @@ export function isEffective(rule: Rule, asOf: string): boolean {
 }
 
 /** 규칙 묶음 중 asOf에 유효한 규칙 전부로 판정합니다. */
-export function evaluateAll(ruleSet: RuleSet, profile: UserProfile, options: EvalOptions): Result[] {
+export function evaluateAll(
+  ruleSet: RuleSet,
+  profile: UserProfile,
+  options: EvalOptions,
+): Result[] {
   return ruleSet.rules
     .filter((rule) => isEffective(rule, options.asOf))
     .map((rule) => evaluate(rule, profile, options));

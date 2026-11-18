@@ -2,7 +2,7 @@
 
 > 세션을 시작하면 이 파일부터 읽고, 끝날 때 갱신합니다.
 
-## 현재 단계: v0 진행 중 (4번 엔진 구현 도중 중단, 2026-11-17)
+## 현재 단계: v0 진행 중 (1~5 완료, 6번 mobile-web 진행 예정, 2026-11-18)
 
 ## 완료
 - [x] 기획·아키텍처·결정 문서 작성 (2026-11-17)
@@ -13,13 +13,8 @@
 1. [x] 모노레포 초기화: pnpm workspaces, TS strict, Vitest, ESLint/Prettier, `.editorconfig`
 2. [x] `packages/rules-engine/src/types.ts` 확정 (`docs/ARCHITECTURE.md` §3 기준)
 3. [x] `packages/rules-data/schema.json` + 상품 규칙 2개(`loan-newlywed-purchase`, `loan-newlywed-jeonse`)
-4. [ ] `facts.ts` / `evaluate.ts` / `limit.ts` 구현 — **진행 중 (WIP 커밋)**
-   - 완료: `dates.ts`(ISO 날짜·기간 계산), `facts.ts`(FACT_KEYS, computeFacts), `conditions.ts`(3값 논리 평가), `evaluate.ts`(evaluate/evaluateAll/isEffective)
-   - 남은 일:
-     - `conditions.ts` compare의 `<,<=,>,>=`가 boolean 유니온 때문에 tsc 오류 → `==`/`!=` 먼저 처리하고, boolean이면 throw, 나머지는 `[number,number] | [string,string]`로 좁혀 비교
-     - `limit.ts` 작성: `computeLimit(spec, ctx)`(cap마다 첫 번째 `when`이 true인 option, 금액 또는 `floor(fact × ratio + 1e-6)`, 계산 불가 cap이 있으면 undefined, 결과는 cap 최솟값), `computeRate(spec, ctx, termYears?)`(bp 정수 계산, topRowWhen이면 마지막 행, 가감 합산, 우대는 항목별 첫 true option 합계를 cap으로 제한, floor 적용), `computeRateRange`(term 열이면 전체 기간의 min/max, fact 열이면 단일값)
-     - `src/index.ts`에서 공개 API export, `pnpm typecheck`·`pnpm lint`(prettier 포함) 통과시키기, `test/smoke.test.ts` 삭제
-5. [ ] 골든 테스트: `docs/golden-cases.md`의 케이스를 `test/golden.test.ts`로 옮기고 전부 통과
+4. [x] `facts.ts` / `evaluate.ts` / `limit.ts` 구현 (+ `dates.ts`, `conditions.ts`)
+5. [x] 골든 테스트: P01~P12, J01~J10, R01~R04 + P09 금리 전부 통과 (`test/golden.test.ts`), 보조 테스트 `test/engine.test.ts`
 6. [ ] `apps/mobile-web` 뼈대: Vite + React + Tailwind, `src/data/` 어댑터(인터페이스 + static + factory + withFallback), `public-config/config.json`
 7. [ ] CI: GitHub Actions에서 lint, test, 규칙 스키마 검사
 

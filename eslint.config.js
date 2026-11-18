@@ -36,5 +36,17 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    files: ['**/test/**/*.ts', '**/*.test.ts', '**/*.test.tsx'],
+    rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
+  },
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { varsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
+    },
+  },
   prettier,
 );
