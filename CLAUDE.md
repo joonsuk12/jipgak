@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # 집각 (jipgak)
 
 신혼·예비부부용 정책 대출(이후 청약 특별공급) 자격 판정 서비스입니다. 판정은 기기 안의 TS 엔진이 하고, 정책 조건은 JSON 규칙 데이터로 관리합니다. 배포는 정적 호스팅이 기본이며, 기능별 토글로 온라인 서버 모드로 전환할 수 있습니다.
@@ -29,7 +33,30 @@ pnpm build               # mobile-web 빌드
 pnpm --filter @jipgak/mobile-web dev        # 개발 서버
 ```
 
-CI(`.github/workflows/ci.yml`)는 스키마 검사 → lint → typecheck → test → build 순서로 돌립니다.
+테스트 하나만 돌릴 때:
+
+```bash
+pnpm --filter @jipgak/rules-engine exec vitest run test/golden.test.ts   # 파일 하나
+pnpm --filter @jipgak/rules-engine exec vitest run -t "P01"             # 이름으로 (골든 케이스 ID)
+```
+
+패키지는 빌드하지 않고 TS 소스(`main: src/index.ts`)를 그대로 가져다 씁니다. `pnpm build`는 mobile-web만 빌드합니다. CI(`.github/workflows/ci.yml`)는 스키마 검사 → lint → typecheck → test → build 순서로 돌립니다.
+
+## 구조 한눈에
+
+- **판정 흐름:** `UserProfile` → `computeFacts`(`facts.ts`, 키 목록 `FACT_KEYS`) → 규칙 JSON 조건이 fact 키를 참조 → `evaluateNode`(`conditions.ts`, 3값 논리 true/false/null=모름) → `evaluate.ts`가 루트 조건 결과로 상태를 정하고, 루트 `all`의 자식 하나당 `checks` 한 줄 → 불가가 아니면 `limit.ts`가 한도·금리 계산
+- **새 입력 추가:** `types.ts`(UserProfile) → `facts.ts`(FACT_KEYS + computeFacts) → 규칙 JSON. 규칙이 모르는 fact를 쓰면 `test/engine.test.ts`가 잡습니다.
+- **규칙 JSON 문법** (스키마 원본 `packages/rules-data/schema.json`)
+  - `definitions` + `{ "ref": 이름 }`으로 공통 조건 재사용
+  - 날짜 조건 `withinPast`·`withinNext`, 값은 ISO 기간(`P7Y`, `P3M`)
+  - `notes`의 `when`·`unless`: 사용자가 미리 알 수 없는 신청 요건(계약 체결 등)은 상태 대신 안내로 표시(D-15)
+  - `limit.caps[].options`: 처음 `when`이 true인 선택지(금액 또는 fact × 비율). 한도는 cap들의 최솟값
+  - `rate`: 금리표 + `topRowWhen`(1인 소득 → 최고 행) + 가감 + 우대(항목별 1개, 합계 상한) + 하한
+- **의존 방향:** rules-data는 엔진에 의존하지 않습니다(순환 방지). `products`는 `unknown[]`이라 쓰는 쪽에서 `as Rule[]`로 바꿉니다. 엔진은 골든 테스트용으로 rules-data를 devDependency로 둡니다.
+- **mobile-web:** 화면은 `src/data/factory.ts`로 데이터 출처를 받습니다(static 기본, api는 빈 자리 + `withFallback`). `/config.json`은 vite `publicDir: ../../public-config`에서 서빙합니다. `screens/playground/`는 개발용 판정 화면이고, 프리셋 결과는 `test/playground.test.ts`가 골든 기대값과 대조합니다.
+- **단위:** 금액은 원 단위 정수입니다. 골든 문서는 만 원 단위라 테스트에서 `man()`으로 바꿉니다. 금리는 내부에서 bp 정수로 계산합니다.
+- **TS 주의:** `exactOptionalPropertyTypes` 때문에 "모름"은 `undefined`를 넣지 말고 키를 빼서 표현합니다(테스트의 `without*` 함수, `playground/form.ts`의 `compact`). TypeScript는 6.0 고정(D-14).
+- **엔진 순수성은 린트가 강제합니다:** `packages/rules-engine/src`에서 `Date.now()`, 인자 없는 `new Date()`, `fetch`·`window`·`document`·`localStorage` 금지(`eslint.config.js`).
 
 
 ## 규칙
@@ -41,6 +68,7 @@ CI(`.github/workflows/ci.yml`)는 스키마 검사 → lint → typecheck → te
 - 화면 코드는 `src/data/sources.ts` 인터페이스만 의존합니다. `fetch`를 화면에서 직접 호출하지 않습니다.
 - 사용자 입력값(소득, 자산 등)은 서버 전송, 로그, 분석 이벤트에 절대 포함하지 않습니다.
 - 서버 모드(`api`) 구현은 해당 단계 전까지 만들지 않습니다. 인터페이스만 둡니다.
+- 진행사항은 작업 도중에도 `docs/STATUS.md`에 갱신하고 커밋합니다. 중단되더라도 다음 세션이 바로 이어받을 수 있게 합니다.
 
 ## 토큰 절약 수칙
 
