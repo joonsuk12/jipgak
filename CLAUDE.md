@@ -15,15 +15,20 @@
 ## 명령
 
 ```bash
-corepack enable          # pnpm이 없을 때 최초 1회
+corepack enable pnpm --install-directory "$APPDATA/npm"   # pnpm이 없을 때 최초 1회 (Windows, 관리자 권한 없이)
 pnpm install
-pnpm test                # 전체 테스트 (vitest)
+pnpm test                # 전체 테스트 (vitest, 골든 케이스 포함)
 pnpm --filter @jipgak/rules-engine test
-pnpm lint
-pnpm build
+pnpm --filter @jipgak/rules-data validate   # 규칙 JSON 스키마 검사
+pnpm lint                # ESLint + Prettier 검사
+pnpm format              # Prettier 자동 정리
+pnpm typecheck           # tsc --noEmit (패키지별)
+pnpm build               # mobile-web 빌드
+pnpm --filter @jipgak/mobile-web dev        # 개발 서버
 ```
 
-v0에서 실제 스크립트를 만들면 이 목록을 실제와 맞게 갱신합니다.
+CI(`.github/workflows/ci.yml`)는 스키마 검사 → lint → typecheck → test → build 순서로 돌립니다.
+
 
 ## 규칙
 

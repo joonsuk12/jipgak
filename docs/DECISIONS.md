@@ -16,3 +16,5 @@
 | D-10 | 2026-11-17 | 모노레포 pnpm workspaces, TypeScript strict, Vitest | 엔진·데이터·앱을 한 레포에서 관리. 설정이 단순 |
 | D-11 | 2026-11-17 | 판정 상태 3가지: `eligible` / `ineligible` / `needs_check`. 신용도 등은 `manualChecks`로 항상 안내만 | 모르는 입력을 허용하면서도 결과를 명확히 보여 주기 위해 |
 | D-12 | 2026-11-17 | 대출 상품 제휴·수수료 모델 금지 (검토 전까지) | 대출 모집·중개 등록 이슈 |
+| D-13 | 2026-11-18 | 조건 평가는 3값 논리(true/false/null, Kleene). 날짜 조건은 ISO 8601 기간(`P7Y`, `P3M`)으로, 공통 조건은 `definitions` + `{ ref }`로 표현 | "모름" 입력을 그대로 `needs_check`로 이어 주고, 정책 수치를 코드가 아닌 규칙 JSON에만 두기 위해 |
+| D-14 | 2026-11-18 | TypeScript 6.0 고정 | typescript-eslint가 TS 7을 아직 지원하지 않음. 지원되면 올림 |

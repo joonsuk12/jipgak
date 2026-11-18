@@ -2,27 +2,27 @@
 
 > 세션을 시작하면 이 파일부터 읽고, 끝날 때 갱신합니다.
 
-## 현재 단계: v0 진행 중 (1~6 완료, 7번 CI 진행 예정, 2026-11-18)
+## 현재 단계: v0 완료 (2026-11-18). 다음은 v1
 
 ## 완료
 - [x] 기획·아키텍처·결정 문서 작성 (2026-11-17)
 - [x] v1 대상 2개 상품 공식 출처 요약 (`docs/sources/`, 2026-11-17 확인)
 - [x] 골든 케이스 초안 (`docs/golden-cases.md`) — 사용자 검토 필요
+- [x] v0 (2026-11-17~18): 모노레포, 엔진(`types`·`dates`·`facts`·`conditions`·`evaluate`·`limit`), 규칙 스키마와 상품 규칙 2개, 골든 테스트(P·J·R 전부 통과, 모순으로 보류한 케이스 없음), mobile-web 뼈대와 데이터 어댑터, `public-config/config.json`, CI
 
-## 다음 할 일 (v0, 위에서부터 순서대로)
-1. [x] 모노레포 초기화: pnpm workspaces, TS strict, Vitest, ESLint/Prettier, `.editorconfig`
-2. [x] `packages/rules-engine/src/types.ts` 확정 (`docs/ARCHITECTURE.md` §3 기준)
-3. [x] `packages/rules-data/schema.json` + 상품 규칙 2개(`loan-newlywed-purchase`, `loan-newlywed-jeonse`)
-4. [x] `facts.ts` / `evaluate.ts` / `limit.ts` 구현 (+ `dates.ts`, `conditions.ts`)
-5. [x] 골든 테스트: P01~P12, J01~J10, R01~R04 + P09 금리 전부 통과 (`test/golden.test.ts`), 보조 테스트 `test/engine.test.ts`
-6. [x] `apps/mobile-web` 뼈대: Vite + React + Tailwind, `src/data/` 어댑터(인터페이스 + static + factory + withFallback), `public-config/config.json`
-7. [ ] CI: GitHub Actions에서 lint, test, 규칙 스키마 검사
+## 다음 할 일 (v1, 위에서부터 순서대로)
+1. [ ] 사용자 검토 반영: 골든 케이스 기대값, 아래 "확인 필요" 항목(특히 계약 전 판정을 어떻게 보여 줄지)
+2. [ ] GitHub 원격 레포 push 후 CI 첫 실행 확인 (로컬에서는 같은 명령이 모두 통과, Actions에서는 아직 실행 전)
+3. [ ] `rules-data/build.ts`: 규칙 번들 `rules-<version>.json` + `manifest.json`(버전, 해시) 생성, `StaticRulesSource`에 manifest 확인·로컬 캐시 추가
+4. [ ] 화면: 목적 선택 → 입력 위저드("모름" 허용) → 결과 목록 → 상세(조건별 체크리스트, 근거 링크, 예상 한도·금리 범위)
+5. [ ] `src/platform/storage` (입력값은 기기에만 저장)
+6. [ ] Cloudflare Pages 배포(`*.pages.dev`), 면책 문구, 개인정보 처리방침, 분석(입력값 제외)
 
 ## 다음 세션 메모
 - pnpm은 `corepack enable pnpm --install-directory "$APPDATA/npm"`로 설치함 (Program Files 쓰기 권한 없음). pnpm 12.21.0
-- TypeScript는 6.0으로 고정 (typescript-eslint가 TS 7 미지원)
-- 골든 테스트 작성 시: 기본 프로필에 `contractSigned: true`, 지방 케이스는 `regulated: false`, R 케이스는 `computeRate`의 `baseRate`로 검증. J09는 합산 5,000을 3,000+2,000으로 나눔
-- 4번 끝나면 5→6→7 순서 그대로, 끝나면 CLAUDE.md 명령 목록(`pnpm typecheck`, `pnpm --filter @jipgak/rules-data validate` 추가) 갱신
+- TypeScript는 6.0으로 고정 (typescript-eslint가 TS 7 미지원). Vite 8, Vitest 5, Tailwind 4, ESLint 10
+- 골든 테스트 기본 프로필: `contractSigned: true`, 지방 케이스는 `regulated: false`, R 케이스는 `computeRate(...).baseRate`로 검증, J09는 합산 5,000을 3,000+2,000으로 나눔
+- 엔진 린트 규칙: `packages/rules-engine/src`에서 `Date.now()`, 인자 없는 `new Date()`, `fetch`·`window`·`document`·`localStorage` 금지
 
 ## 사용자 TODO
 - [ ] KIPRIS 상표 검색으로 "집각" 확인
