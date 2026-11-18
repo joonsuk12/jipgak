@@ -207,9 +207,14 @@ export interface RuleSource {
   checkedAt: ISODate;
 }
 
+/**
+ * 결과에 붙는 안내. when이 true이고 unless가 true가 아닐 때 보여 줍니다.
+ * unless는 "확실히 충족한 게 아니면(false 또는 모름) 안내"할 때 씁니다. 예: 계약 체결 전 안내
+ */
 export interface RuleNote {
   id: string;
-  when: ConditionNode;
+  when?: ConditionNode;
+  unless?: ConditionNode;
   text: string;
 }
 

@@ -27,7 +27,7 @@ describe('테스트 화면 프리셋 = 골든 케이스', () => {
     ['P09', 'eligible', 24_000, 'eligible', 16_000],
     ['P11', 'needs_check', 32_000, 'needs_check', 24_000],
     ['J10', 'needs_check', 32_000, 'needs_check', 24_000],
-    ['C1', 'needs_check', 32_000, 'needs_check', 24_000],
+    ['C1', 'eligible', 32_000, 'eligible', 24_000],
   ] as const)('%s', (id, pStatus, pLimit, jStatus, jLimit) => {
     const r = run(id);
     expect(r.purchase.status).toBe(pStatus);

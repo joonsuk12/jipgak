@@ -197,10 +197,15 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "when", "text"],
+        "required": ["id", "text"],
+        "anyOf": [
+          { "required": ["when"], "properties": { "when": true } },
+          { "required": ["unless"], "properties": { "unless": true } }
+        ],
         "properties": {
           "id": { "type": "string" },
           "when": { "$ref": "#/$defs/node" },
+          "unless": { "$ref": "#/$defs/node" },
           "text": { "type": "string", "minLength": 1 }
         }
       }

@@ -53,7 +53,9 @@ export function evaluate(rule: Rule, profile: UserProfile, options: EvalOptions)
       ? root.all.map((child, i) => toCheck(child, i, ctx))
       : [toCheck(root, 0, ctx)];
 
-  const notes = (rule.notes ?? []).filter((n) => holds(n.when, ctx)).map((n) => n.text);
+  const notes = (rule.notes ?? [])
+    .filter((n) => holds(n.when, ctx) && (n.unless === undefined || !holds(n.unless, ctx)))
+    .map((n) => n.text);
 
   const result: Result = {
     ruleId: rule.id,

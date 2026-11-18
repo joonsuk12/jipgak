@@ -32,13 +32,6 @@
   "conditions": {
     "all": [
       {
-        "id": "contract",
-        "label": "주택매매계약 체결",
-        "fact": "purchase.contractSigned",
-        "op": "==",
-        "value": true
-      },
-      {
         "id": "allHomeless",
         "label": "세대원 전원 무주택",
         "fact": "household.allHomeless",
@@ -204,7 +197,9 @@
             },
             "amount": 400000000
           },
-          { "amount": 320000000 }
+          {
+            "amount": 320000000
+          }
         ]
       },
       {
@@ -233,13 +228,21 @@
             "ratio": 0.7,
             "of": "purchase.price"
           },
-          { "ratio": 0.8, "of": "purchase.price" }
+          {
+            "ratio": 0.8,
+            "of": "purchase.price"
+          }
         ]
       },
       {
         "id": "price",
         "label": "매매가격 이내",
-        "options": [{ "ratio": 1, "of": "purchase.price" }]
+        "options": [
+          {
+            "ratio": 1,
+            "of": "purchase.price"
+          }
+        ]
       }
     ]
   },
@@ -247,7 +250,10 @@
     "table": {
       "rowFact": "income.combined",
       "rowUpTo": [20000000, 40000000, 70000000, 85000000],
-      "columns": { "kind": "term", "years": [10, 15, 20, 30] },
+      "columns": {
+        "kind": "term",
+        "years": [10, 15, 20, 30]
+      },
       "rates": [
         [2.55, 2.65, 2.75, 2.8],
         [2.9, 3.0, 3.1, 3.15],
@@ -255,7 +261,9 @@
         [3.6, 3.7, 3.8, 3.85]
       ]
     },
-    "topRowWhen": { "ref": "singleIncomeBasis" },
+    "topRowWhen": {
+      "ref": "singleIncomeBasis"
+    },
     "adjustments": [
       {
         "id": "nonMetro",
@@ -272,7 +280,9 @@
       {
         "id": "singleIncome",
         "label": "1인 소득 기준 신청: 만기별 최고금리 +0.3%p",
-        "when": { "ref": "singleIncomeBasis" },
+        "when": {
+          "ref": "singleIncomeBasis"
+        },
         "deltaPp": 0.3
       }
     ],
@@ -402,8 +412,21 @@
   },
   "notes": [
     {
+      "id": "contractRequired",
+      "unless": {
+        "id": "contract",
+        "label": "주택매매계약 체결",
+        "fact": "purchase.contractSigned",
+        "op": "==",
+        "value": true
+      },
+      "text": "주택매매계약을 체결해야 신청할 수 있습니다. 계약 전이라면 계약 후 수탁은행에 신청하세요."
+    },
+    {
       "id": "singleIncome",
-      "when": { "ref": "singleIncomeBasis" },
+      "when": {
+        "ref": "singleIncomeBasis"
+      },
       "text": "1인 소득 기준 적용, 금리 +0.3%p"
     },
     {

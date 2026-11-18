@@ -24,7 +24,7 @@ const LOCAL: Region = { metro: false, regulated: false };
 
 /**
  * 공통 기본값: 세대원 전원 무주택, 주택 보유 이력 없음, 기금대출·주담대·전세대출 미이용, 공공임대 미거주.
- * 문서에 없는 계약 체결 여부는 체결(true)로 가정합니다(STATUS "확인 필요" 참고).
+ * 매매·임대차 계약 체결. 계약 여부는 상태에 영향을 주지 않습니다(D-15).
  */
 function base(): UserProfile {
   return {
@@ -63,6 +63,12 @@ function withoutNetAssets(p: UserProfile): UserProfile {
 function withoutFundLoanAnswer(p: UserProfile): UserProfile {
   const { hasFundLoan: _omit, ...household } = p.household;
   return { ...p, household };
+}
+
+/** 임대차계약 체결 여부 "모름" */
+function withoutJeonseContractAnswer(p: UserProfile): UserProfile {
+  const { contractSigned: _omit, ...jeonse } = p.jeonse!;
+  return { ...p, jeonse };
 }
 
 interface Case {
@@ -132,6 +138,13 @@ const purchaseCases: Case[] = [
     profile: { ...p01, purchase: { ...p01.purchase!, areaM2: 99 } },
     status: 'ineligible',
   },
+  {
+    id: 'P13',
+    profile: { ...p01, purchase: { ...p01.purchase!, contractSigned: false } },
+    status: 'eligible',
+    limit: 32_000,
+    note: '주택매매계약을 체결해야 신청할 수 있습니다. 계약 전이라면 계약 후 수탁은행에 신청하세요.',
+  },
 ];
 
 const j01 = base();
@@ -184,6 +197,13 @@ const jeonseCases: Case[] = [
     status: 'needs_check',
     limit: 24_000,
   },
+  {
+    id: 'J11',
+    profile: withoutJeonseContractAnswer(j01),
+    status: 'eligible',
+    limit: 24_000,
+    note: '임대차계약을 체결하고 보증금의 5% 이상을 지불해야 신청할 수 있습니다. 계약 전이라면 계약 후 수탁은행에 신청하세요.',
+  },
 ];
 
 function runCases(rule: Rule, cases: Case[]): void {
@@ -191,8 +211,11 @@ function runCases(rule: Rule, cases: Case[]): void {
     const result = evaluate(rule, profile, { asOf });
     expect(result.status).toBe(status);
     expect(result.estimatedLimit).toBe(limit === undefined ? undefined : man(limit));
-    if (note) expect(result.notes).toContain(note);
-    else expect(result.notes.some((n) => n.startsWith('1인 소득'))).toBe(false);
+    // 골든 케이스가 명시한 안내(1인 소득 기준, 계약 전)만 붙어야 합니다.
+    const flagged = result.notes.filter(
+      (n) => n.startsWith('1인 소득') || n.includes('계약 전이라면'),
+    );
+    expect(flagged).toEqual(note ? [note] : []);
   });
 }
 
