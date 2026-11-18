@@ -10,6 +10,7 @@
 - [x] 골든 케이스 초안 (`docs/golden-cases.md`) — 사용자 검토 필요
 - [x] 판정 테스트 화면 (2026-11-18): `apps/mobile-web/src/screens/playground/`. 골든 케이스 프리셋을 불러와 입력을 바꾸면 즉시 다시 판정. 프리셋 = 골든 기대값 테스트 포함. `pnpm --filter @jipgak/mobile-web dev`로 실행
 - [x] 사용자 검토 항목 정리: `docs/REVIEW.md`
+- [x] 용어집 `docs/GLOSSARY.md` (2026-11-18): 개념 설명만, 정책 수치는 sources 참조. 화면 도움말 원본
 - [x] v0 (2026-11-17~18): 모노레포, 엔진(`types`·`dates`·`facts`·`conditions`·`evaluate`·`limit`), 규칙 스키마와 상품 규칙 2개, 골든 테스트(P·J·R 전부 통과, 모순으로 보류한 케이스 없음), mobile-web 뼈대와 데이터 어댑터, `public-config/config.json`, CI
 
 ## 다음 할 일 (v1, 위에서부터 순서대로)
@@ -17,8 +18,9 @@
 2. [ ] GitHub 원격 레포 push 후 CI 첫 실행 확인 (로컬에서는 같은 명령이 모두 통과, Actions에서는 아직 실행 전)
 3. [ ] `rules-data/build.ts`: 규칙 번들 `rules-<version>.json` + `manifest.json`(버전, 해시) 생성, `StaticRulesSource`에 manifest 확인·로컬 캐시 추가
 4. [ ] 화면: 목적 선택 → 입력 위저드("모름" 허용) → 결과 목록 → 상세(조건별 체크리스트, 근거 링크, 예상 한도·금리 범위)
-5. [ ] `src/platform/storage` (입력값은 기기에만 저장)
-6. [ ] Cloudflare Pages 배포(`*.pages.dev`), 면책 문구, 개인정보 처리방침, 분석(입력값 제외)
+5. [ ] 화면 용어 도움말: 입력 칸·결과 항목 옆 "?"에서 `docs/GLOSSARY.md` 내용을 짧게 보여 주기 (특히 전용면적 vs 평, 혼인신고일 기준, %p)
+6. [ ] `src/platform/storage` (입력값은 기기에만 저장)
+7. [ ] Cloudflare Pages 배포(`*.pages.dev`), 면책 문구, 개인정보 처리방침, 분석(입력값 제외)
 
 ## 다음 세션 메모
 - pnpm은 `corepack enable pnpm --install-directory "$APPDATA/npm"`로 설치함 (Program Files 쓰기 권한 없음). pnpm 12.21.0

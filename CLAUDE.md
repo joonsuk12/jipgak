@@ -10,6 +10,8 @@
    - 왜 이렇게 정했는지 궁금할 때: `docs/DECISIONS.md` (여기 있는 결정은 다시 논의하지 않음)
    - 규칙값이 필요할 때: `docs/sources/*.md` (원문 웹페이지·PDF를 다시 읽지 않음)
    - 테스트 기대값: `docs/golden-cases.md`
+   - 부동산·대출 용어 뜻: `docs/GLOSSARY.md` (화면 도움말 문구의 원본)
+   - 사용자 결정 대기 항목: `docs/REVIEW.md`
    - 제품 범위와 로드맵: `docs/PLAN.md`
 
 ## 명령
