@@ -1,0 +1,9 @@
+{
+  "apiBaseUrl": "/api",
+  "features": {
+    "rules": "static",
+    "notices": "off",
+    "profileSync": "off",
+    "ads": "off"
+  }
+}

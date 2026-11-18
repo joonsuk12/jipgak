@@ -2,7 +2,7 @@
 
 > 세션을 시작하면 이 파일부터 읽고, 끝날 때 갱신합니다.
 
-## 현재 단계: v0 진행 중 (1~5 완료, 6번 mobile-web 진행 예정, 2026-11-18)
+## 현재 단계: v0 진행 중 (1~6 완료, 7번 CI 진행 예정, 2026-11-18)
 
 ## 완료
 - [x] 기획·아키텍처·결정 문서 작성 (2026-11-17)
@@ -15,7 +15,7 @@
 3. [x] `packages/rules-data/schema.json` + 상품 규칙 2개(`loan-newlywed-purchase`, `loan-newlywed-jeonse`)
 4. [x] `facts.ts` / `evaluate.ts` / `limit.ts` 구현 (+ `dates.ts`, `conditions.ts`)
 5. [x] 골든 테스트: P01~P12, J01~J10, R01~R04 + P09 금리 전부 통과 (`test/golden.test.ts`), 보조 테스트 `test/engine.test.ts`
-6. [ ] `apps/mobile-web` 뼈대: Vite + React + Tailwind, `src/data/` 어댑터(인터페이스 + static + factory + withFallback), `public-config/config.json`
+6. [x] `apps/mobile-web` 뼈대: Vite + React + Tailwind, `src/data/` 어댑터(인터페이스 + static + factory + withFallback), `public-config/config.json`
 7. [ ] CI: GitHub Actions에서 lint, test, 규칙 스키마 검사
 
 ## 다음 세션 메모

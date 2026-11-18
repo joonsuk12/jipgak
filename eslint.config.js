@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
 import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
 
 export default tseslint.config(
   { ignores: ['**/node_modules/**', '**/dist/**', '**/coverage/**'] },
@@ -35,6 +36,10 @@ export default tseslint.config(
         { name: 'localStorage', message: '엔진에서 플랫폼 API 접근 금지' },
       ],
     },
+  },
+  {
+    files: ['apps/mobile-web/src/**/*.{ts,tsx}'],
+    ...reactHooks.configs.flat.recommended,
   },
   {
     files: ['**/test/**/*.ts', '**/*.test.ts', '**/*.test.tsx'],
