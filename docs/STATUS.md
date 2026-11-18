@@ -11,7 +11,7 @@
 - [x] 판정 테스트 화면 (2026-11-18): `apps/mobile-web/src/screens/playground/`. 골든 케이스 프리셋을 불러와 입력을 바꾸면 즉시 다시 판정. 프리셋 = 골든 기대값 테스트 포함. `pnpm --filter @jipgak/mobile-web dev`로 실행
 - [x] 사용자 검토 항목 정리: `docs/REVIEW.md`
 - [x] 계약 체결·전세 담보별 한도를 "가능 + 안내"로 변경 (D-15, 2026-11-18). 골든 P13·J11 추가
-- [x] 용어집 `docs/GLOSSARY.md` (2026-11-18): 개념 설명만, 정책 수치는 sources 참조. 화면 도움말 원본
+- [x] 용어집 `docs/GLOSSARY.md` (2026-11-18): 용어별 💬 한 줄 안내 + 상세 설명 + 개발자 메모. ★ = 화면에 항상 표시. 정책 수치는 sources 참조
 - [x] v0 (2026-11-17~18): 모노레포, 엔진(`types`·`dates`·`facts`·`conditions`·`evaluate`·`limit`), 규칙 스키마와 상품 규칙 2개, 골든 테스트(P·J·R 전부 통과, 모순으로 보류한 케이스 없음), mobile-web 뼈대와 데이터 어댑터, `public-config/config.json`, CI
 
 ## 다음 할 일 (v1, 위에서부터 순서대로)
@@ -19,7 +19,7 @@
 2. [ ] GitHub 원격 레포 push 후 CI 첫 실행 확인 (로컬에서는 같은 명령이 모두 통과, Actions에서는 아직 실행 전)
 3. [ ] `rules-data/build.ts`: 규칙 번들 `rules-<version>.json` + `manifest.json`(버전, 해시) 생성, `StaticRulesSource`에 manifest 확인·로컬 캐시 추가
 4. [ ] 화면: 목적 선택 → 입력 위저드("모름" 허용) → 결과 목록 → 상세(조건별 체크리스트, 근거 링크, 예상 한도·금리 범위)
-5. [ ] 화면 용어 도움말 (D-16): 헷갈리는 항목 아래 한 줄 안내 + "자세히"로 상세 펼침. 먼저 GLOSSARY에 용어별 "한 줄 안내"를 추가하고, 화면용 데이터(`content/glossary`)로 옮김. 우선 대상: 전용면적(평 아님), 혼인신고일 기준, 순자산, 세대원 전원 무주택, 생애최초, %p
+5. [ ] 화면 용어 도움말 (D-16): 헷갈리는 항목 아래 한 줄 안내 + "자세히"로 상세 펼침. GLOSSARY의 💬 한 줄 안내(41개, ★ 14개는 항상 표시)를 화면용 데이터(`content/glossary`)로 옮김. 우선 대상: 전용면적(평 아님), 혼인신고일 기준, 순자산, 세대원 전원 무주택, 생애최초, %p
 6. [ ] `src/platform/storage` (입력값은 기기에만 저장)
 7. [ ] Cloudflare Pages 배포(`*.pages.dev`), 면책 문구, 개인정보 처리방침, 분석(입력값 제외)
 
