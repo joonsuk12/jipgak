@@ -6,6 +6,7 @@ import {
   type Answers,
   emptyAnswers,
   ruleIdsFor,
+  stepForCondition,
   toProfile,
   visibleSteps,
 } from '../src/screens/wizard/answers';
@@ -95,6 +96,20 @@ describe('위저드 답 → 엔진 입력', () => {
     expect(visibleSteps(a)).toContain('jeonseHome');
     expect(ruleIdsFor(a)).toEqual(['loan-newlywed-jeonse']);
     expect(toProfile(a).purchase).toBeUndefined();
+  });
+});
+
+describe('조건 → 질문 단계', () => {
+  it.each(products as Rule[])('$id 의 모든 조건을 고칠 단계가 있다', (r) => {
+    const root = r.conditions as { all?: { id?: string }[] };
+    const ids = (root.all ?? []).map((c) => c.id ?? '');
+    for (const id of ids) {
+      expect({ id, step: stepForCondition(r.id, id) }).not.toEqual({ id, step: undefined });
+    }
+  });
+  it('면적은 상품에 맞는 집 단계로', () => {
+    expect(stepForCondition('loan-newlywed-purchase', 'area')).toBe('purchaseHome');
+    expect(stepForCondition('loan-newlywed-jeonse', 'area')).toBe('jeonseHome');
   });
 });
 

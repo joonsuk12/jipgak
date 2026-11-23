@@ -7,6 +7,7 @@ import {
   wantsJeonse,
   wantsPurchase,
 } from './answers';
+import { todayISO } from '../../format';
 import { ChoiceGroup, DateField, NumberField, Question } from './fields';
 
 /** 단계별 제목(질문)과 진행 표시용 짧은 이름 */
@@ -105,6 +106,11 @@ export function MarriageStep({ a, update }: StepProps) {
             value={a.marriageDate}
             onChange={(v) => update({ marriageDate: v })}
           />
+          {planned && a.marriageDate && a.marriageDate < todayISO() && (
+            <p role="status" className="bg-amber-soft px-3 py-2 text-sm leading-6 text-ink">
+              예정일이 지났어요. 혼인신고를 했다면 위에서 &lsquo;네, 했어요&rsquo;를 골라 주세요.
+            </p>
+          )}
         </Question>
       )}
       <Question label="자녀" hint={HINT.children}>

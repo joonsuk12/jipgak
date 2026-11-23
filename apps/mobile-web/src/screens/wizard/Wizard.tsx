@@ -1,8 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { evaluate, type RuleSet } from '@jipgak/rules-engine';
-import { ResultCard } from '../../components/ResultCard';
+import { ResultCard, ResultSummary } from '../../components/ResultCard';
 import { todayISO } from '../../format';
-import { type Answers, emptyAnswers, ruleIdsFor, toProfile, visibleSteps } from './answers';
+import {
+  type Answers,
+  emptyAnswers,
+  ruleIdsFor,
+  stepForCondition,
+  toProfile,
+  visibleSteps,
+} from './answers';
 import {
   AssetsStep,
   HistoryStep,
@@ -18,6 +25,8 @@ import {
 export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
   const [answers, setAnswers] = useState<Answers>(emptyAnswers);
   const [index, setIndex] = useState(0);
+  /** 결과에서 "답하러 가기"로 왔으면 다음 버튼이 결과로 바로 돌아갑니다. */
+  const [fromResult, setFromResult] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   const steps = visibleSteps(answers);
@@ -36,6 +45,13 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
 
   const update = (patch: Partial<Answers>) => setAnswers((a) => ({ ...a, ...patch }));
   const go = (next: number) => setIndex(Math.max(0, Math.min(next, steps.length - 1)));
+  const fix = (ruleId: string, conditionId: string) => {
+    const target = stepForCondition(ruleId, conditionId);
+    const i = target ? steps.indexOf(target) : -1;
+    if (i < 0) return;
+    setFromResult(true);
+    setIndex(i);
+  };
 
   const results = useMemo(() => {
     if (!isResult) return [];
@@ -56,9 +72,15 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
     purchaseHome: <PurchaseHomeStep a={answers} update={update} />,
     jeonseHome: <JeonseHomeStep a={answers} update={update} />,
     result: (
-      <div className="space-y-10">
+      <div className="space-y-12">
+        <ResultSummary items={results} />
         {results.map(({ rule, result }) => (
-          <ResultCard key={rule.id} rule={rule} result={result} />
+          <ResultCard
+            key={rule.id}
+            rule={rule}
+            result={result}
+            onFix={(conditionId) => fix(rule.id, conditionId)}
+          />
         ))}
         <p className="text-sm leading-6 text-ink-soft">
           참고용 결과예요. 실제 자격과 한도는 기금 수탁은행 심사로 정해져요.
@@ -120,6 +142,7 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
                 className="min-h-12 flex-1 rounded-md bg-ink px-4 font-semibold text-paper"
                 onClick={() => {
                   setAnswers(emptyAnswers());
+                  setFromResult(false);
                   setIndex(0);
                 }}
               >
@@ -141,9 +164,13 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
                 type="button"
                 disabled={!canNext}
                 className="min-h-12 flex-1 rounded-md bg-pine px-4 font-semibold text-white disabled:bg-rule disabled:text-ink-soft"
-                onClick={() => go(index + 1)}
+                onClick={() => go(fromResult ? steps.length - 1 : index + 1)}
               >
-                {steps[index + 1] === 'result' ? '결과 보기' : '다음'}
+                {fromResult
+                  ? '결과 다시 보기'
+                  : steps[index + 1] === 'result'
+                    ? '결과 보기'
+                    : '다음'}
               </button>
             </>
           )}

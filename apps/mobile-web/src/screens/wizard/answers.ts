@@ -176,6 +176,28 @@ export function toProfile(a: Answers): UserProfile {
   });
 }
 
+/**
+ * 결과의 조건(최상위 checks 한 줄)을 어느 질문 단계에서 고칠 수 있는지.
+ * 규칙 JSON의 최상위 조건 id와 맞춰야 합니다(test/wizard.test.ts가 확인).
+ */
+const CONDITION_STEP: Record<string, StepId> = {
+  allHomeless: 'history',
+  noDuplicateLoan: 'history',
+  firstHome: 'history',
+  noPublicRental: 'history',
+  income: 'income',
+  netAssets: 'assets',
+  newlywed: 'marriage',
+  deposit: 'jeonseHome',
+};
+
+export function stepForCondition(ruleId: string, conditionId: string): StepId | undefined {
+  if (conditionId === 'area' || conditionId === 'price') {
+    return ruleId === 'loan-newlywed-jeonse' ? 'jeonseHome' : 'purchaseHome';
+  }
+  return CONDITION_STEP[conditionId];
+}
+
 /** 결과에 보여 줄 규칙 id */
 export function ruleIdsFor(a: Answers): string[] {
   const ids: string[] = [];
