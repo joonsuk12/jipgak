@@ -16,6 +16,7 @@ export interface FormState {
   childrenCount: string;
   allHomeless: Tri;
   everOwnedHome: Tri;
+  everHadFundPurchaseLoan: Tri;
   hasFundLoan: Tri;
   hasMortgageLoan: Tri;
   hasJeonseLoan: Tri;
@@ -42,6 +43,7 @@ export const BASE_FORM: FormState = {
   childrenCount: '0',
   allHomeless: 'yes',
   everOwnedHome: 'no',
+  everHadFundPurchaseLoan: 'no',
   hasFundLoan: 'no',
   hasMortgageLoan: 'no',
   hasJeonseLoan: 'no',
@@ -100,6 +102,22 @@ export const PRESETS: Preset[] = [
     },
   },
   { id: 'P11', label: 'P11 순자산 모름', patch: { netAssets: '' } },
+  {
+    id: 'P14',
+    label: 'P14 기금 구입대출 이력 있음 (상환 완료)',
+    patch: { everHadFundPurchaseLoan: 'yes' },
+  },
+  {
+    id: 'P15',
+    label: 'P15 지방, 규제지역 모름',
+    patch: {
+      applicantIncome: '1800',
+      spouseIncome: '1200',
+      purchaseMetro: false,
+      purchaseRegulated: 'unknown',
+      purchasePrice: '30000',
+    },
+  },
   { id: 'J06', label: 'J06 순자산 40,000', patch: { netAssets: '40000' } },
   { id: 'J10', label: 'J10 기금대출 이용 여부 모름', patch: { hasFundLoan: 'unknown' } },
   {
@@ -144,6 +162,7 @@ export function toProfile(f: FormState): UserProfile {
     household: compact({
       allHomeless: tri(f.allHomeless),
       everOwnedHome: tri(f.everOwnedHome),
+      everHadFundPurchaseLoan: tri(f.everHadFundPurchaseLoan),
       hasFundLoan: tri(f.hasFundLoan),
       hasMortgageLoan: tri(f.hasMortgageLoan),
       hasJeonseLoan: tri(f.hasJeonseLoan),

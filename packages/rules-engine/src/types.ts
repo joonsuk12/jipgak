@@ -35,6 +35,8 @@ export interface Household {
   allHomeless?: boolean;
   /** 세대원 중 주택 보유 이력 (생애최초 판정용) */
   everOwnedHome?: boolean;
+  /** 세대원 중 기금 구입자금·중도금 대출 이용 이력 (상환 포함, 생애최초 판정용) */
+  everHadFundPurchaseLoan?: boolean;
   /** 주택도시기금 대출 이용 중 */
   hasFundLoan?: boolean;
   /** 은행 주택담보대출 이용 중 */

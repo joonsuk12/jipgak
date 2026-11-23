@@ -23,7 +23,7 @@ const METRO: Region = { metro: true };
 const LOCAL: Region = { metro: false, regulated: false };
 
 /**
- * 공통 기본값: 세대원 전원 무주택, 주택 보유 이력 없음, 기금대출·주담대·전세대출 미이용, 공공임대 미거주.
+ * 공통 기본값: 세대원 전원 무주택, 주택 보유 이력 없음, 기금 구입·중도금 대출 이력 없음, 기금대출·주담대·전세대출 미이용, 공공임대 미거주.
  * 매매·임대차 계약 체결. 계약 여부는 상태에 영향을 주지 않습니다(D-15).
  */
 function base(): UserProfile {
@@ -35,6 +35,7 @@ function base(): UserProfile {
     household: {
       allHomeless: true,
       everOwnedHome: false,
+      everHadFundPurchaseLoan: false,
       hasFundLoan: false,
       hasMortgageLoan: false,
       hasJeonseLoan: false,
@@ -145,6 +146,21 @@ const purchaseCases: Case[] = [
     limit: 32_000,
     note: '주택매매계약을 체결해야 신청할 수 있습니다. 계약 전이라면 계약 후 수탁은행에 신청하세요.',
   },
+  {
+    id: 'P14',
+    profile: { ...p01, household: { ...p01.household, everHadFundPurchaseLoan: true } },
+    status: 'ineligible',
+  },
+  {
+    id: 'P15',
+    profile: {
+      ...withIncome(p01, 1_800, 1_200),
+      purchase: { region: { metro: false }, price: man(30_000), areaM2: 84, contractSigned: true },
+    },
+    status: 'eligible',
+    limit: 24_000,
+    note: '규제지역 여부를 몰라 LTV 80%로 계산했습니다. 규제지역이면 LTV 70%가 적용되어 예상 한도가 줄어듭니다.',
+  },
 ];
 
 const j01 = base();
@@ -211,9 +227,12 @@ function runCases(rule: Rule, cases: Case[]): void {
     const result = evaluate(rule, profile, { asOf });
     expect(result.status).toBe(status);
     expect(result.estimatedLimit).toBe(limit === undefined ? undefined : man(limit));
-    // 골든 케이스가 명시한 안내(1인 소득 기준, 계약 전)만 붙어야 합니다.
+    // 골든 케이스가 명시한 안내(1인 소득 기준, 계약 전, 규제지역 모름)만 붙어야 합니다.
     const flagged = result.notes.filter(
-      (n) => n.startsWith('1인 소득') || n.includes('계약 전이라면'),
+      (n) =>
+        n.startsWith('1인 소득') ||
+        n.includes('계약 전이라면') ||
+        n.includes('규제지역 여부를 몰라'),
     );
     expect(flagged).toEqual(note ? [note] : []);
   });

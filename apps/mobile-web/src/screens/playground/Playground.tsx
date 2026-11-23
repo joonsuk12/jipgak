@@ -135,6 +135,7 @@ export function Playground({ ruleSet }: { ruleSet: RuleSet }) {
       <Group title="주택·대출 이력">
         {triSelect('allHomeless', '세대원 전원 무주택')}
         {triSelect('everOwnedHome', '주택 보유 이력 있음')}
+        {triSelect('everHadFundPurchaseLoan', '기금 구입·중도금 대출 이력 (상환 포함)')}
         {triSelect('hasFundLoan', '기금대출 이용 중')}
         {triSelect('hasMortgageLoan', '은행 주택담보대출 이용 중')}
         {triSelect('hasJeonseLoan', '은행 전세자금대출 이용 중')}

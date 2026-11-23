@@ -129,10 +129,23 @@
       },
       {
         "id": "firstHome",
-        "label": "생애최초 주택구입 (세대원 전원 주택 보유 이력 없음)",
-        "fact": "household.everOwnedHome",
-        "op": "==",
-        "value": false
+        "label": "생애최초 주택구입 (세대원 전원 주택 보유 이력과 기금 구입·중도금 대출 이력 없음)",
+        "all": [
+          {
+            "id": "neverOwnedHome",
+            "label": "세대원 전원 주택 보유 이력 없음",
+            "fact": "household.everOwnedHome",
+            "op": "==",
+            "value": false
+          },
+          {
+            "id": "noFundPurchaseLoanHistory",
+            "label": "기금 구입·중도금 대출 이용 이력 없음 (상환 포함)",
+            "fact": "household.everHadFundPurchaseLoan",
+            "op": "==",
+            "value": false
+          }
+        ]
       },
       {
         "id": "area",
@@ -439,6 +452,35 @@
         "value": "planned"
       },
       "text": "결혼예정자는 대출 후 3개월 내 배우자가 등재된 주민등록등본을 제출해야 합니다(사유서 제출 시 최장 6개월)."
+    },
+    {
+      "id": "regulatedUnknown",
+      "when": {
+        "id": "nonMetro",
+        "label": "수도권 외",
+        "fact": "purchase.metro",
+        "op": "==",
+        "value": false
+      },
+      "unless": {
+        "any": [
+          {
+            "id": "regulatedYes",
+            "label": "규제지역",
+            "fact": "purchase.regulated",
+            "op": "==",
+            "value": true
+          },
+          {
+            "id": "regulatedNo",
+            "label": "비규제지역",
+            "fact": "purchase.regulated",
+            "op": "==",
+            "value": false
+          }
+        ]
+      },
+      "text": "규제지역 여부를 몰라 LTV 80%로 계산했습니다. 규제지역이면 LTV 70%가 적용되어 예상 한도가 줄어듭니다."
     }
   ],
   "manualChecks": [
@@ -446,7 +488,6 @@
     "민법상 성년 세대주여야 합니다(세대주의 배우자, 3개월 이내 결혼으로 세대주 예정인 자 포함).",
     "상속·증여·재산분할로 취득하는 주택은 대상이 아닙니다.",
     "분양권·조합원 입주권도 주택으로 봅니다(무주택 판단 시).",
-    "생애최초: 기금 구입자금·중도금 대출 이용 이력(상환 포함)이 없어야 합니다.",
     "기금 전세대출은 대출실행일 당일 상환 조건이면 이용 중이어도 신청할 수 있습니다.",
     "DTI 60% 이내여야 합니다(1인 소득 기준 신청 시 그 1인의 소득·부채로 계산).",
     "예상 한도는 선순위채권·임대보증금을 0으로 가정한 값입니다."
