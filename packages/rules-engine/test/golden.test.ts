@@ -227,8 +227,13 @@ const jeonseCases: Case[] = [
   },
   {
     id: 'J12',
-    profile: { ...j01, jeonse: { ...j01.jeonse!, region: {} } },
+    profile: { ...j01, jeonse: { ...j01.jeonse!, region: {}, deposit: man(35_000) } },
     status: 'needs_check',
+  },
+  {
+    id: 'J13',
+    profile: { ...j01, jeonse: { ...j01.jeonse!, region: {} } },
+    status: 'eligible',
   },
 ];
 

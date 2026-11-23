@@ -184,6 +184,13 @@
         "label": "임차보증금 수도권 4억 원, 수도권 외 3억 원 이하",
         "any": [
           {
+            "id": "depositAnyRegion",
+            "label": "보증금 3억 원 이하 (어느 지역이든 충족)",
+            "fact": "jeonse.deposit",
+            "op": "<=",
+            "value": 300000000
+          },
+          {
             "all": [
               {
                 "id": "metro",
@@ -198,24 +205,6 @@
                 "fact": "jeonse.deposit",
                 "op": "<=",
                 "value": 400000000
-              }
-            ]
-          },
-          {
-            "all": [
-              {
-                "id": "nonMetro",
-                "label": "수도권 외",
-                "fact": "jeonse.metro",
-                "op": "==",
-                "value": false
-              },
-              {
-                "id": "depositNonMetro",
-                "label": "보증금 3억 원 이하",
-                "fact": "jeonse.deposit",
-                "op": "<=",
-                "value": 300000000
               }
             ]
           }

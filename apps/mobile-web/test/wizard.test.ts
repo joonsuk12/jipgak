@@ -66,10 +66,13 @@ describe('위저드 답 → 엔진 입력', () => {
     expect(r.purchase.status).toBe('needs_check');
   });
 
-  it('지역 모름이면 지역 조건이 확인 필요', () => {
+  it('지역 모름: 지역에 따라 갈리는 보증금이면 확인 필요, 아니면 가능(한도는 없음)', () => {
     const a = p01();
-    const r = run({ ...a, jeonse: { ...a.jeonse, region: 'unknown' } });
-    expect(r.jeonse.status).toBe('needs_check');
+    const over = run({ ...a, jeonse: { ...a.jeonse, region: 'unknown', amount: '35000' } });
+    expect(over.jeonse.status).toBe('needs_check');
+    const under = run({ ...a, jeonse: { ...a.jeonse, region: 'unknown' } });
+    expect(under.jeonse.status).toBe('eligible');
+    expect(under.jeonse.estimatedLimit).toBeUndefined();
   });
 
   it('수도권이면 규제지역 답은 무시', () => {
