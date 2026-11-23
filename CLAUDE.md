@@ -53,7 +53,7 @@ pnpm --filter @jipgak/rules-engine exec vitest run -t "P01"             # 이름
   - `limit.caps[].options`: 처음 `when`이 true인 선택지(금액 또는 fact × 비율). 한도는 cap들의 최솟값
   - `rate`: 금리표 + `topRowWhen`(1인 소득 → 최고 행) + 가감 + 우대(항목별 1개, 합계 상한) + 하한
 - **의존 방향:** rules-data는 엔진에 의존하지 않습니다(순환 방지). `products`는 `unknown[]`이라 쓰는 쪽에서 `as Rule[]`로 바꿉니다. 엔진은 골든 테스트용으로 rules-data를 devDependency로 둡니다.
-- **mobile-web:** 화면은 `src/data/factory.ts`로 데이터 출처를 받습니다(static 기본, api는 빈 자리 + `withFallback`). `/config.json`은 vite `publicDir: ../../public-config`에서 서빙합니다. `screens/playground/`는 개발용 판정 화면이고, 프리셋 결과는 `test/playground.test.ts`가 골든 기대값과 대조합니다.
+- **mobile-web:** 기본 경로(`/`)는 입력 위저드(`screens/wizard/`: 답 모델 `answers.ts` → `toProfile()` → 엔진), `/#/dev`는 개발용 판정 화면입니다. 결과 카드는 `components/ResultCard.tsx` 하나를 같이 씁니다. 규칙은 `src/data/useRuleSet.ts` 훅으로 받고, 이 훅은 `src/data/factory.ts`로 데이터 출처를 고릅니다(static 기본, api는 빈 자리 + `withFallback`). `/config.json`은 vite `publicDir: ../../public-config`에서 서빙합니다. `screens/playground/`는 개발용 판정 화면이고, 프리셋 결과는 `test/playground.test.ts`가 골든 기대값과 대조합니다.
 - **단위:** 금액은 원 단위 정수입니다. 골든 문서는 만 원 단위라 테스트에서 `man()`으로 바꿉니다. 금리는 내부에서 bp 정수로 계산합니다.
 - **TS 주의:** `exactOptionalPropertyTypes` 때문에 "모름"은 `undefined`를 넣지 말고 키를 빼서 표현합니다(테스트의 `without*` 함수, `playground/form.ts`의 `compact`). TypeScript는 6.0 고정(D-14).
 - **엔진 순수성은 린트가 강제합니다:** `packages/rules-engine/src`에서 `Date.now()`, 인자 없는 `new Date()`, `fetch`·`window`·`document`·`localStorage` 금지(`eslint.config.js`).

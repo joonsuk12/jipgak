@@ -58,6 +58,7 @@ jipgak/
 > v0에서 `packages/rules-engine/src/types.ts`로 확정했습니다. **기준은 types.ts**이고, 아래는 처음 초안입니다. 초안과 달라진 점:
 > - `household.hasMortgageOrJeonseLoan` → `hasMortgageLoan` / `hasJeonseLoan`으로 분리 (구입자금은 은행 전세대출을 막지 않음)
 > - `purchase`·`jeonse`에 `contractSigned`(계약 체결 여부) 추가, 금액·면적은 선택 입력
+> - `Region.metro`도 선택 입력(지역 모름 허용)
 > - 조건 노드: 날짜 기간 연산 `withinPast`/`withinNext`(값은 `P7Y` 같은 ISO 8601 기간), 묶음 노드에 `id`/`label`, `rule.definitions` + `{ ref }` 참조 추가
 > - 판정은 3값 논리(Kleene): `all`은 false가 하나라도 있으면 false, `any`는 true가 하나라도 있으면 true. 상태는 최상위 조건 트리의 결과로 정하고, `checks`는 최상위 `all`의 자식 하나당 한 줄입니다.
 > - `limit`: 항목(cap)별로 `options` 중 처음 `when`이 true인 값(금액 또는 fact × 비율)을 고르고, 항목들의 최솟값이 한도입니다. 부적격이면 한도를 계산하지 않습니다.

@@ -15,9 +15,9 @@ export interface Person {
   annualIncome?: Won;
 }
 
-/** 지역 구분. metro = 수도권(서울·인천·경기) */
+/** 지역 구분. metro = 수도권(서울·인천·경기). undefined = 모름 */
 export interface Region {
-  metro: boolean;
+  metro?: boolean;
   /** 규제지역 여부 */
   regulated?: boolean;
   /** 수도권 외 도시지역이 아닌 읍·면 */

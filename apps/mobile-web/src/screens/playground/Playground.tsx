@@ -1,6 +1,8 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import { evaluate, type Result, type RuleSet, type Status } from '@jipgak/rules-engine';
-import { BASE_FORM, PRESETS, toProfile, todayISO, type FormState, type Tri } from './form';
+import { evaluate, type RuleSet } from '@jipgak/rules-engine';
+import { ResultCard } from '../../components/ResultCard';
+import { todayISO } from '../../format';
+import { BASE_FORM, PRESETS, toProfile, type FormState, type Tri } from './form';
 
 /**
  * 판정 테스트 화면 (개발용). 입력을 바꾸면 기기 안의 엔진으로 즉시 다시 판정합니다.
@@ -161,7 +163,7 @@ export function Playground({ ruleSet }: { ruleSet: RuleSet }) {
         <h2 className="text-lg font-bold">판정 결과</h2>
         {results.map((r) =>
           'result' in r && r.result ? (
-            <ResultCard key={r.rule.id} name={r.rule.name} result={r.result} />
+            <ResultCard key={r.rule.id} rule={r.rule} result={r.result} />
           ) : (
             <p key={r.rule.id} className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
               {r.rule.name}: 판정 오류 — {'error' in r ? r.error : ''}
@@ -170,79 +172,6 @@ export function Playground({ ruleSet }: { ruleSet: RuleSet }) {
         )}
       </div>
     </section>
-  );
-}
-
-const STATUS_STYLE: Record<Status, { label: string; className: string }> = {
-  eligible: { label: '가능', className: 'bg-emerald-100 text-emerald-800' },
-  needs_check: { label: '확인 필요', className: 'bg-amber-100 text-amber-800' },
-  ineligible: { label: '불가', className: 'bg-red-100 text-red-800' },
-};
-
-const manWon = (won: number) => `${Math.round(won / 10_000).toLocaleString('ko-KR')}만 원`;
-
-function ResultCard({ name, result }: { name: string; result: Result }) {
-  const status = STATUS_STYLE[result.status];
-  return (
-    <article className="space-y-3 rounded-lg border border-slate-200 p-4">
-      <header className="flex items-center justify-between gap-2">
-        <h3 className="font-semibold">{name}</h3>
-        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${status.className}`}>
-          {status.label}
-        </span>
-      </header>
-
-      {(result.estimatedLimit !== undefined || result.rateRange) && (
-        <dl className="grid grid-cols-2 gap-2 text-sm">
-          <div>
-            <dt className="text-xs text-slate-500">예상 한도</dt>
-            <dd className="font-medium">
-              {result.estimatedLimit !== undefined ? manWon(result.estimatedLimit) : '—'}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-xs text-slate-500">예상 금리 (우대 반영)</dt>
-            <dd className="font-medium">
-              {result.rateRange
-                ? result.rateRange.min === result.rateRange.max
-                  ? `${result.rateRange.min.toFixed(2)}%`
-                  : `${result.rateRange.min.toFixed(2)} ~ ${result.rateRange.max.toFixed(2)}%`
-                : '—'}
-            </dd>
-          </div>
-        </dl>
-      )}
-
-      <ul className="space-y-1 text-sm">
-        {result.checks.map((c) => (
-          <li key={c.conditionId} className="flex gap-2">
-            <span className="w-4 shrink-0 text-center">
-              {c.passed === true ? '✅' : c.passed === false ? '❌' : '❔'}
-            </span>
-            <span className={c.passed === false ? 'text-red-700' : ''}>{c.label}</span>
-          </li>
-        ))}
-      </ul>
-
-      {result.notes.length > 0 && (
-        <ul className="list-disc space-y-1 pl-5 text-xs text-blue-800">
-          {result.notes.map((n) => (
-            <li key={n}>{n}</li>
-          ))}
-        </ul>
-      )}
-
-      <details className="text-xs text-slate-600">
-        <summary className="cursor-pointer">
-          직접 확인할 항목 {result.manualChecks.length}개
-        </summary>
-        <ul className="mt-1 list-disc space-y-1 pl-5">
-          {result.manualChecks.map((m) => (
-            <li key={m}>{m}</li>
-          ))}
-        </ul>
-      </details>
-    </article>
   );
 }
 
