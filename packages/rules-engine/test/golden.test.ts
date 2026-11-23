@@ -161,6 +161,11 @@ const purchaseCases: Case[] = [
     limit: 24_000,
     note: '규제지역 여부를 몰라 LTV 80%로 계산했습니다. 규제지역이면 LTV 70%가 적용되어 예상 한도가 줄어듭니다.',
   },
+  {
+    id: 'P16',
+    profile: { ...p01, purchase: { ...p01.purchase!, region: {} } },
+    status: 'eligible',
+  },
 ];
 
 const j01 = base();
@@ -219,6 +224,11 @@ const jeonseCases: Case[] = [
     status: 'eligible',
     limit: 24_000,
     note: '임대차계약을 체결하고 보증금의 5% 이상을 지불해야 신청할 수 있습니다. 계약 전이라면 계약 후 수탁은행에 신청하세요.',
+  },
+  {
+    id: 'J12',
+    profile: { ...j01, jeonse: { ...j01.jeonse!, region: {} } },
+    status: 'needs_check',
   },
 ];
 
