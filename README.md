@@ -13,3 +13,5 @@
 - [진행 상황](docs/STATUS.md)
 - [규칙 출처](docs/sources/README.md)
 - [골든 케이스](docs/golden-cases.md)
+- [테스트 한눈에 보기](docs/TEST-CASES.md)
+- [용어집](docs/GLOSSARY.md)
