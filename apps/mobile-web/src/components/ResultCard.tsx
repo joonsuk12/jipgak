@@ -1,5 +1,6 @@
 import type { Check, Result, Rule, Status } from '@jipgak/rules-engine';
 import { formatWon } from '../format';
+import { Help } from './Help';
 
 /** 판정 도장. 가능 = 초록 실선, 확인 필요 = 점선("모름"과 같은 표시), 불가 = 빨강 */
 const STAMP: Record<Status, { label: string; className: string }> = {
@@ -104,9 +105,10 @@ export function ResultCard({
               </dd>
             </div>
           </dl>
-          {result.rateRange && (
-            <p className="text-sm leading-6 text-ink-soft">{rateCaption(rule)}</p>
-          )}
+          <Help
+            term="estimate"
+            hint={result.rateRange ? rateCaption(rule) : '입력값으로 계산한 추정치예요.'}
+          />
         </div>
       )}
 
@@ -169,6 +171,9 @@ export function ResultCard({
         <summary className="cursor-pointer py-1 font-medium text-ink">
           은행에서 직접 확인할 항목 {result.manualChecks.length}개
         </summary>
+        <div className="mt-2">
+          <Help term="manualCheck" />
+        </div>
         <ul className="mt-2 list-disc space-y-1.5 pl-5 leading-6">
           {result.manualChecks.map((m) => (
             <li key={m}>{m}</li>

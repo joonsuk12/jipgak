@@ -1,6 +1,10 @@
 import { useId, type ReactNode } from 'react';
 import { digitsOnly, formatManWon } from '../../format';
+import { Help } from '../../components/Help';
+import type { TermKey } from '../../glossary';
 import type { Amount, Choice } from './answers';
+
+export { Help };
 
 /**
  * 위저드 입력 부품. "모름"은 항상 점선 칸으로 보여 줍니다.
@@ -13,28 +17,27 @@ const GRID = { 1: 'grid-cols-1', 2: 'grid-cols-2', 3: 'grid-cols-3' } as const;
 export function Question({
   label,
   hint,
+  term,
   hideLabel = false,
   children,
 }: {
   label: string;
   hint?: string;
+  /** 용어집 용어. 한 줄 안내와 "자세히"를 붙입니다. */
+  term?: TermKey;
   /** 제목(질문)과 같은 말이면 화면에서는 숨기고 읽기 프로그램에만 알립니다. */
   hideLabel?: boolean;
   children: ReactNode;
 }) {
   const id = useId();
+  const hasHelp = Boolean(hint || term);
   return (
-    <fieldset className="space-y-3" aria-describedby={hint ? `${id}-hint` : undefined}>
+    <fieldset className="space-y-3" aria-describedby={hasHelp ? `${id}-hint` : undefined}>
       <legend className={hideLabel ? 'sr-only' : 'text-[15px] leading-6 font-semibold text-ink'}>
         {label}
       </legend>
-      {hint && (
-        <p
-          id={`${id}-hint`}
-          className="border-l-2 border-rule pl-3 text-sm leading-6 text-ink-soft"
-        >
-          {hint}
-        </p>
+      {hasHelp && (
+        <Help id={`${id}-hint`} {...(term ? { term } : {})} {...(hint ? { hint } : {})} />
       )}
       {children}
     </fieldset>

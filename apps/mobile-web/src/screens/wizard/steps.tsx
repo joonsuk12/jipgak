@@ -8,7 +8,7 @@ import {
   wantsPurchase,
 } from './answers';
 import { todayISO } from '../../format';
-import { ChoiceGroup, DateField, NumberField, Question } from './fields';
+import { ChoiceGroup, DateField, Help, NumberField, Question } from './fields';
 
 /** 단계별 제목(질문)과 진행 표시용 짧은 이름 */
 export const STEP_META: Record<StepId, { title: string; short: string }> = {
@@ -22,22 +22,10 @@ export const STEP_META: Record<StepId, { title: string; short: string }> = {
   result: { title: '판정 결과예요', short: '결과' },
 };
 
-/** 문구 원본: docs/GLOSSARY.md의 💬 한 줄 안내 (D-16) */
+/** 용어집에 없는 질문별 안내. 용어 안내는 Question의 term으로 docs/GLOSSARY.md에서 가져옵니다(D-16). */
 const HINT = {
-  marriageDate: '결혼식 날이 아니라 혼인신고일부터 세요.',
   plannedDate: '결혼 예정일 기준으로 판정해요. 대출 후 배우자가 함께 올라간 등본을 내야 해요.',
-  income:
-    '세금 떼기 전 연봉에서 비과세 수당(식대 등)을 뺀 금액이에요. 원천징수영수증에서 볼 수 있어요.',
-  applicant: '합산 소득이 기준을 넘어도 신청하는 분 한 사람 소득으로 될 수 있어서 따로 받아요.',
-  netAssets:
-    '부부의 재산(전세보증금·예금·주식·차·부동산)에서 대출을 뺀 금액이에요. 부동산은 시세가 아니라 공시가격으로 계산해요.',
-  homeless: '등본에 함께 올라 있는 가족 모두 집이 없어야 해요. 분양권도 집으로 볼 수 있어요.',
-  firstHome: '예전에 집이 있었다가 팔았어도 해당해요.',
-  fundPurchaseLoan: '다 갚은 대출도 포함해요.',
-  duplicateLoan: '이미 쓰고 있으면 새로 받을 수 없어요(예외 있음).',
-  regulated: '투기과열지구·조정대상지역이에요. 다른 지역보다 대출을 적게 해 줘요.',
-  area: "흔히 말하는 '평수'가 아니에요. 전용 84㎡가 보통 34평형이에요.",
-  contract: '자격 판정에는 필요 없어요. 계약을 맺은 뒤 은행에 신청할 때 필요해요.',
+  fundPurchaseLoan: '다 갚은 대출도 포함해요. 받은 적이 있으면 생애최초가 아니에요.',
   children: '금리 우대에만 쓰여요.',
 } as const;
 
@@ -62,7 +50,12 @@ function Stack({ children }: { children: ReactNode }) {
 export function PurposeStep({ a, update }: StepProps) {
   return (
     <Stack>
-      <Question label="알아볼 대출" hideLabel hint="주택도시기금의 신혼부부 전용 대출로 판정해요.">
+      <Question
+        label="알아볼 대출"
+        hideLabel
+        term="fund"
+        hint="주택도시기금의 신혼부부 전용 대출로 판정해요."
+      >
         <ChoiceGroup
           allowUnknown={false}
           value={a.purpose}
@@ -99,7 +92,7 @@ export function MarriageStep({ a, update }: StepProps) {
       {a.marriageStatus && (
         <Question
           label={planned ? '결혼 예정일' : '혼인신고일'}
-          hint={planned ? HINT.plannedDate : HINT.marriageDate}
+          {...(planned ? { hint: HINT.plannedDate } : { term: 'marriagePeriod' as const })}
         >
           <DateField
             label={planned ? '결혼 예정일' : '혼인신고일'}
@@ -133,8 +126,8 @@ export function MarriageStep({ a, update }: StepProps) {
 export function IncomeStep({ a, update }: StepProps) {
   return (
     <Stack>
-      <p className="border-l-2 border-rule pl-3 text-sm leading-6 text-ink-soft">{HINT.income}</p>
-      <Question label="대출을 신청할 분의 연소득" hint={HINT.applicant}>
+      <Help term="combinedIncome" />
+      <Question label="대출을 신청할 분의 연소득" term="singleIncome">
         <NumberField
           label="신청할 분의 연소득"
           unit="만 원"
@@ -157,7 +150,7 @@ export function IncomeStep({ a, update }: StepProps) {
 export function AssetsStep({ a, update }: StepProps) {
   return (
     <Stack>
-      <Question label="부부 합산 순자산" hideLabel hint={HINT.netAssets}>
+      <Question label="부부 합산 순자산" hideLabel term="netAssets">
         <NumberField
           label="부부 합산 순자산"
           unit="만 원"
@@ -174,7 +167,7 @@ export function HistoryStep({ a, update }: StepProps) {
   const jeonse = wantsJeonse(a);
   return (
     <Stack>
-      <Question label="등본에 함께 있는 가족 모두 집이 없나요?" hint={HINT.homeless}>
+      <Question label="등본에 함께 있는 가족 모두 집이 없나요?" term="homeless">
         <ChoiceGroup
           value={a.allHomeless}
           onChange={(v) => update({ allHomeless: v })}
@@ -185,7 +178,7 @@ export function HistoryStep({ a, update }: StepProps) {
         />
       </Question>
       {purchase && (
-        <Question label="가족 중 집을 가져 본 적이 있나요?" hint={HINT.firstHome}>
+        <Question label="가족 중 집을 가져 본 적이 있나요?" term="firstHome">
           <ChoiceGroup
             columns={3}
             value={a.everOwnedHome}
@@ -197,6 +190,7 @@ export function HistoryStep({ a, update }: StepProps) {
       {purchase && (
         <Question
           label="주택도시기금 구입·중도금 대출을 받은 적이 있나요?"
+          term="firstHome"
           hint={HINT.fundPurchaseLoan}
         >
           <ChoiceGroup
@@ -209,7 +203,7 @@ export function HistoryStep({ a, update }: StepProps) {
       )}
       <Question
         label="지금 주택도시기금 대출(디딤돌·버팀목 등)을 쓰고 있나요?"
-        hint={HINT.duplicateLoan}
+        term="duplicateLoan"
       >
         <ChoiceGroup
           columns={3}
@@ -239,6 +233,7 @@ export function HistoryStep({ a, update }: StepProps) {
       {jeonse && (
         <Question
           label="지금 공공임대주택에 살고 있나요?"
+          term="publicRental"
           hint="새로 들어갈 집이 그 공공임대주택이거나, 이사 나가는 경우는 괜찮아요."
         >
           <ChoiceGroup
@@ -279,7 +274,7 @@ function HomeStep({
         />
       </Question>
       {purchase && home.region === 'local' && (
-        <Question label="규제지역인가요?" hint={HINT.regulated}>
+        <Question label="규제지역인가요?" term="regulated">
           <ChoiceGroup
             columns={3}
             value={home.regulated}
@@ -291,7 +286,7 @@ function HomeStep({
           />
         </Question>
       )}
-      <Question label={purchase ? '매매가' : '전세 보증금'}>
+      <Question label={purchase ? '매매가' : '전세 보증금'} term={purchase ? 'price' : 'deposit'}>
         <NumberField
           label={purchase ? '매매가' : '전세 보증금'}
           unit="만 원"
@@ -299,7 +294,7 @@ function HomeStep({
           onChange={(v) => onChange({ amount: v })}
         />
       </Question>
-      <Question label="전용면적" hint={HINT.area}>
+      <Question label="전용면적" term="area">
         <NumberField
           label="전용면적"
           unit="㎡"
@@ -309,7 +304,7 @@ function HomeStep({
         />
       </Question>
       {asksRuralTownship(home) && (
-        <Question label="도시지역이 아닌 읍·면에 있나요?" hint="이런 곳은 면적 기준이 더 넓어요.">
+        <Question label="도시지역이 아닌 읍·면에 있나요?" term="ruralTownship">
           <ChoiceGroup
             columns={3}
             value={home.ruralTownship}
@@ -323,7 +318,7 @@ function HomeStep({
       )}
       <Question
         label={purchase ? '매매계약을 했나요?' : '임대차계약을 하고 보증금의 5% 이상을 냈나요?'}
-        hint={HINT.contract}
+        term="contract"
       >
         <ChoiceGroup
           columns={3}
