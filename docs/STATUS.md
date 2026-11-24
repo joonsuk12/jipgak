@@ -37,7 +37,7 @@
 10. [ ] Cloudflare Pages 배포(`*.pages.dev`), 면책 문구, 개인정보 처리방침, 분석(입력값 제외)
 
 ## 다음 세션 메모
-- **다음 세션 시작점 (2026-11-24):** 입력값 기기 저장·코드 리뷰 반영·면적 입력 도움까지 완료(테스트 114개). 가구원 수별 면적 참고 정보까지 완료. 다음은 출시 준비(9~10번). (v1 마무리 점검(`/code-review`, 사용자 전역 규칙상 "코드리뷰"는 `mattpocock-skills:code-review`) 는 2026-11-24 완료.) 출시 준비: 글꼴 자체 호스팅 검토, 규칙 번들 빌드, 배포 전 `/security-review`. 사용자 대기: GitHub 레포 생성 후 push·CI 확인, REVIEW 2-10 콜센터 확인. 화면 작업 전에 `frontend-design` 스킬을 먼저 불러오고, 디자인 토큰은 D-20을 따름. 위저드는 `/`, 개발용 테스트 화면은 `/#/dev`
+- **다음 세션 시작점 (2026-11-24 마감):** v1 화면·코드 리뷰·면적 입력(평형 중심, D-25)·가구원 수별 면적 참고까지 완료(테스트 116개). 다음은 출시 준비(9~10번): 글꼴 자체 호스팅 검토 → 규칙 번들 빌드(`rules-data/build.ts`) → 배포 전 `/security-review` → Cloudflare Pages 배포. 사용자 대기: GitHub 레포 생성 후 push·CI 확인, REVIEW 2-10 콜센터 확인. 화면 작업 전 `frontend-design` 스킬, 디자인 토큰 D-20. 위저드 `/`, 개발용 `/#/dev`
 - 사용자: GitHub 비공개 레포 생성 후 알려 주면 push·CI 첫 실행을 함께 확인
 - 다음 출처 재검증 예정: 2027-02 (분기, D-17). 2027년도 순자산 기준은 통계청 발표 후 바뀜
 - pnpm은 `corepack enable pnpm --install-directory "$APPDATA/npm"`로 설치함 (Program Files 쓰기 권한 없음). pnpm 12.21.0
