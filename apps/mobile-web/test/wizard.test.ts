@@ -2,6 +2,7 @@ import { products } from '@jipgak/rules-data';
 import { evaluate, type Rule } from '@jipgak/rules-engine';
 import { describe, expect, it } from 'vitest';
 import { decimalOnly, formatManWon, m2ToPyeong, pyeongToM2, todayISO } from '../src/format';
+import { describePyeongType } from '../src/screens/wizard/areaTypes';
 import { HOUSEHOLD_AREA } from '../src/screens/wizard/householdArea';
 import {
   type Answers,
@@ -141,6 +142,15 @@ describe('format', () => {
       ['4인', 79.7, 24.1],
       ['5인 이상', 87.1, 26.3],
     ]);
+  });
+  it('전용면적 → 흔한 평형 표현 (세 기준점 59·74·84㎡ 사이만)', () => {
+    expect(describePyeongType(84)).toBe('흔히 34평형 안팎');
+    expect(describePyeongType(84.97)).toBe('흔히 34평형 안팎');
+    expect(describePyeongType(59)).toBe('흔히 25평형 안팎');
+    expect(describePyeongType(65.6)).toBe('25~30평형 사이');
+    expect(describePyeongType(79.7)).toBe('30~34평형 사이');
+    expect(describePyeongType(44)).toBe('25평형보다 작아요');
+    expect(describePyeongType(99)).toBe('34평형보다 커요');
   });
   it('평 ↔ ㎡ (1평 = 400/121㎡)', () => {
     expect(pyeongToM2(1)).toBe(3.31);

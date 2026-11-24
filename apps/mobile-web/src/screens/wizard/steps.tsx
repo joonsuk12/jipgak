@@ -308,7 +308,7 @@ function HomeStep({
           onChange={(v) => onChange({ amount: v })}
         />
       </Question>
-      <Question label="전용면적" term="area">
+      <Question label="집 크기" term="area">
         <AreaField value={home.area} onChange={(v) => onChange({ area: v })} />
       </Question>
       {asksRuralTownship(home) && (
