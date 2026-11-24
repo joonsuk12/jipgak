@@ -32,9 +32,12 @@ html {
   overflow-wrap: anywhere;
 }
 
-:focus-visible {
-  outline: 2px solid var(--color-pine);
-  outline-offset: 2px;
+/* base 층에 두어야 입력칸의 outline-none 같은 유틸리티가 이 규칙을 덮을 수 있습니다. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-pine);
+    outline-offset: 2px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

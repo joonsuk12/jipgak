@@ -1,7 +1,7 @@
 import { products } from '@jipgak/rules-data';
 import { evaluate, type Rule } from '@jipgak/rules-engine';
 import { describe, expect, it } from 'vitest';
-import { decimalOnly, formatManWon, todayISO } from '../src/format';
+import { decimalOnly, formatManWon, m2ToPyeong, pyeongToM2, todayISO } from '../src/format';
 import {
   type Answers,
   emptyAnswers,
@@ -131,6 +131,12 @@ describe('format', () => {
     expect(formatManWon(50000)).toBe('5억 원');
     expect(formatManWon(35000)).toBe('3억 5,000만 원');
     expect(formatManWon(0)).toBe('0만 원');
+  });
+  it('평 ↔ ㎡ (1평 = 400/121㎡)', () => {
+    expect(pyeongToM2(1)).toBe(3.31);
+    expect(pyeongToM2(25.5)).toBe(84.3);
+    expect(m2ToPyeong(84)).toBe(25.4);
+    expect(m2ToPyeong(59)).toBe(17.8);
   });
   it('면적 입력은 소수점 하나, 둘째 자리까지', () => {
     expect(decimalOnly('84.97㎡')).toBe('84.97');

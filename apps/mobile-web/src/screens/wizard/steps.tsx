@@ -8,6 +8,7 @@ import {
   wantsPurchase,
 } from './answers';
 import { todayISO } from '../../format';
+import { AreaField } from './AreaField';
 import { AssetHelper } from './AssetHelper';
 import { ChoiceGroup, DateField, Help, NumberField, Question } from './fields';
 
@@ -308,14 +309,7 @@ function HomeStep({
         />
       </Question>
       <Question label="전용면적" term="area">
-        <NumberField
-          label="전용면적"
-          unit="㎡"
-          showMoney={false}
-          decimals
-          value={home.area}
-          onChange={(v) => onChange({ area: v })}
-        />
+        <AreaField value={home.area} onChange={(v) => onChange({ area: v })} />
       </Question>
       {asksRuralTownship(home) && (
         <Question label="도시지역이 아닌 읍·면에 있나요?" term="ruralTownship">

@@ -30,6 +30,19 @@ export function decimalOnly(value: string): string {
   return `${whole}.${rest.join('').slice(0, 2)}`;
 }
 
+/** 1평 = 400/121㎡ (약 3.3058㎡, 계량법상 환산값) */
+export const M2_PER_PYEONG = 400 / 121;
+
+/** 평 → ㎡ (소수 둘째 자리 반올림). 전용 평 기준으로만 씁니다(공급 평형과 다름). */
+export function pyeongToM2(pyeong: number): number {
+  return Math.round(pyeong * M2_PER_PYEONG * 100) / 100;
+}
+
+/** ㎡ → 평 (소수 첫째 자리 반올림) */
+export function m2ToPyeong(m2: number): number {
+  return Math.round((m2 / M2_PER_PYEONG) * 10) / 10;
+}
+
 /** 오늘 날짜 'YYYY-MM-DD' (기기 시간대 기준). 엔진 밖인 화면에서만 씁니다. */
 export function todayISO(now: Date = new Date()): string {
   const pad = (n: number) => String(n).padStart(2, '0');
