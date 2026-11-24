@@ -2,6 +2,7 @@ import { products } from '@jipgak/rules-data';
 import { evaluate, type Rule } from '@jipgak/rules-engine';
 import { describe, expect, it } from 'vitest';
 import { decimalOnly, formatManWon, m2ToPyeong, pyeongToM2, todayISO } from '../src/format';
+import { HOUSEHOLD_AREA } from '../src/screens/wizard/householdArea';
 import {
   type Answers,
   emptyAnswers,
@@ -131,6 +132,15 @@ describe('format', () => {
     expect(formatManWon(50000)).toBe('5억 원');
     expect(formatManWon(35000)).toBe('3억 5,000만 원');
     expect(formatManWon(0)).toBe('0만 원');
+  });
+  it('가구원 수별 평균 면적은 docs/sources/household-area.md 값과 같다', () => {
+    expect(HOUSEHOLD_AREA.map((h) => [h.members, h.m2, m2ToPyeong(h.m2)])).toEqual([
+      ['1인', 44.0, 13.3],
+      ['2인', 65.6, 19.8],
+      ['3인', 74.8, 22.6],
+      ['4인', 79.7, 24.1],
+      ['5인 이상', 87.1, 26.3],
+    ]);
   });
   it('평 ↔ ㎡ (1평 = 400/121㎡)', () => {
     expect(pyeongToM2(1)).toBe(3.31);

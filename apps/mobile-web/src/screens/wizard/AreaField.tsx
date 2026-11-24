@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { decimalOnly, m2ToPyeong, pyeongToM2 } from '../../format';
 import type { Amount } from './answers';
 import { NumberField } from './fields';
+import { HOUSEHOLD_AREA, HOUSEHOLD_AREA_SOURCE } from './householdArea';
 
 /**
  * 전용면적 입력. ㎡ 직접 입력 + 흔한 아파트 크기 고르기 + 전용 평 → ㎡ 변환.
@@ -61,6 +62,53 @@ export function AreaField({ value, onChange }: { value: Amount; onChange: (v: Am
           })}
         </div>
       </div>
+
+      <details className="text-sm text-ink-soft">
+        <summary className="cursor-pointer py-1 font-medium text-pine">
+          다른 집은 보통 얼마나 넓게 살까요?
+        </summary>
+        <div className="mt-2 space-y-2">
+          <table className="w-full border-y border-rule text-left tabular-nums">
+            <caption className="sr-only">가구원 수별 평균 전용면적</caption>
+            <thead>
+              <tr className="border-b border-rule text-xs">
+                <th scope="col" className="py-1.5 font-medium">
+                  가구원
+                </th>
+                <th scope="col" className="py-1.5 font-medium">
+                  평균 전용면적
+                </th>
+                <th scope="col" className="py-1.5 font-medium">
+                  전용 평
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {HOUSEHOLD_AREA.map((h) => (
+                <tr key={h.members} className="border-b border-rule last:border-0 text-ink">
+                  <th scope="row" className="py-1.5 font-normal">
+                    {h.members}
+                  </th>
+                  <td className="py-1.5">{h.m2}㎡</td>
+                  <td className="py-1.5">약 {m2ToPyeong(h.m2)}평</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="leading-6">
+            전용면적 기준이라 광고의 &lsquo;평형&rsquo;보다 작게 보여요.{' '}
+            {HOUSEHOLD_AREA_SOURCE.label}이에요(최신 값과 다를 수 있어요).{' '}
+            <a
+              className="underline"
+              href={HOUSEHOLD_AREA_SOURCE.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              원문 보기
+            </a>
+          </p>
+        </div>
+      </details>
 
       <button
         type="button"
