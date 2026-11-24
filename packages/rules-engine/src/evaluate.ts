@@ -53,9 +53,13 @@ export function evaluate(rule: Rule, profile: UserProfile, options: EvalOptions)
       ? root.all.map((child, i) => toCheck(child, i, ctx))
       : [toCheck(root, 0, ctx)];
 
-  const notes = (rule.notes ?? [])
-    .filter((n) => holds(n.when, ctx) && (n.unless === undefined || !holds(n.unless, ctx)))
-    .map((n) => n.text);
+  // 안내(notes)는 신청·한도·금리에 관한 말이라 불가일 때는 붙이지 않습니다.
+  const notes =
+    status === 'ineligible'
+      ? []
+      : (rule.notes ?? [])
+          .filter((n) => holds(n.when, ctx) && (n.unless === undefined || !holds(n.unless, ctx)))
+          .map((n) => n.text);
 
   const result: Result = {
     ruleId: rule.id,

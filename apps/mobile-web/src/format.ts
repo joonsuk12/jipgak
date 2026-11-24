@@ -19,6 +19,17 @@ export function digitsOnly(value: string): string {
   return value.replace(/[^\d]/g, '');
 }
 
+/**
+ * 숫자와 소수점 하나(소수 둘째 자리까지)만 남깁니다. 면적용. "84.97㎡" → "84.97"
+ * (아파트 전용면적은 84.97처럼 소수로 표기되는 경우가 많음)
+ */
+export function decimalOnly(value: string): string {
+  const cleaned = value.replace(/[^\d.]/g, '');
+  const [whole = '', ...rest] = cleaned.split('.');
+  if (rest.length === 0) return whole;
+  return `${whole}.${rest.join('').slice(0, 2)}`;
+}
+
 /** 오늘 날짜 'YYYY-MM-DD' (기기 시간대 기준). 엔진 밖인 화면에서만 씁니다. */
 export function todayISO(now: Date = new Date()): string {
   const pad = (n: number) => String(n).padStart(2, '0');

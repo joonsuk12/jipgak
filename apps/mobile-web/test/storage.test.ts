@@ -68,6 +68,18 @@ describe('입력값 기기 저장', () => {
     expect(a?.jeonse).toEqual(emptyAnswers().jeonse);
   });
 
+  it('소수점 면적도 저장·복원한다', () => {
+    const a = restoreAnswers({ purchase: { area: '84.97' }, jeonse: { area: '59.9.9' } });
+    expect(a?.purchase.area).toBe('84.97');
+    expect(a?.jeonse.area).toBe('');
+  });
+
+  it('키 순서가 달라도 빈 답이면 저장할 내용이 없다', () => {
+    const e = emptyAnswers();
+    const reordered = Object.fromEntries(Object.entries(e).reverse()) as typeof e;
+    expect(hasAnyAnswer(reordered)).toBe(false);
+  });
+
   it('빈 답은 저장할 내용이 없다고 본다', () => {
     expect(hasAnyAnswer(emptyAnswers())).toBe(false);
     expect(hasAnyAnswer(filled())).toBe(true);

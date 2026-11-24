@@ -100,6 +100,12 @@ export function MarriageStep({ a, update }: StepProps) {
             value={a.marriageDate}
             onChange={(v) => update({ marriageDate: v })}
           />
+          {!planned && a.marriageDate && a.marriageDate > todayISO() && (
+            <p role="status" className="bg-amber-soft px-3 py-2 text-sm leading-6 text-ink">
+              혼인신고일이 오늘 이후예요. 날짜를 확인하거나, 아직 신고 전이라면 위에서
+              &lsquo;아직이요, 결혼 예정이에요&rsquo;를 골라 주세요.
+            </p>
+          )}
           {planned && a.marriageDate && a.marriageDate < todayISO() && (
             <p role="status" className="bg-amber-soft px-3 py-2 text-sm leading-6 text-ink">
               예정일이 지났어요. 혼인신고를 했다면 위에서 &lsquo;네, 했어요&rsquo;를 골라 주세요.
@@ -161,6 +167,7 @@ export function AssetsStep({ a, update }: StepProps) {
       </Question>
       <AssetHelper
         values={a.assetItems}
+        current={a.netAssets}
         onChange={(assetItems) => update({ assetItems })}
         onApply={(netAssets) => update({ netAssets })}
       />
@@ -305,6 +312,7 @@ function HomeStep({
           label="전용면적"
           unit="㎡"
           showMoney={false}
+          decimals
           value={home.area}
           onChange={(v) => onChange({ area: v })}
         />

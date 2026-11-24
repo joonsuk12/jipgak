@@ -44,7 +44,7 @@ pnpm --filter @jipgak/rules-engine exec vitest run -t "P01"             # 이름
 
 ## 구조 한눈에
 
-- **판정 흐름:** `UserProfile` → `computeFacts`(`facts.ts`, 키 목록 `FACT_KEYS`) → 규칙 JSON 조건이 fact 키를 참조 → `evaluateNode`(`conditions.ts`, 3값 논리 true/false/null=모름) → `evaluate.ts`가 루트 조건 결과로 상태를 정하고, 루트 `all`의 자식 하나당 `checks` 한 줄 → 불가가 아니면 `limit.ts`가 한도·금리 계산
+- **판정 흐름:** `UserProfile` → `computeFacts`(`facts.ts`, 키 목록 `FACT_KEYS`) → 규칙 JSON 조건이 fact 키를 참조 → `evaluateNode`(`conditions.ts`, 3값 논리 true/false/null=모름) → `evaluate.ts`가 루트 조건 결과로 상태를 정하고, 루트 `all`의 자식 하나당 `checks` 한 줄 → 불가가 아니면 `limit.ts`가 한도·금리를 계산하고 `notes`(안내)를 붙임(불가면 안내 없음)
 - **새 입력 추가:** `types.ts`(UserProfile) → `facts.ts`(FACT_KEYS + computeFacts) → 규칙 JSON. 규칙이 모르는 fact를 쓰면 `test/engine.test.ts`가 잡습니다.
 - **규칙 JSON 문법** (스키마 원본 `packages/rules-data/schema.json`)
   - `definitions` + `{ "ref": 이름 }`으로 공통 조건 재사용

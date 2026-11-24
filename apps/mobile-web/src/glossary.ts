@@ -29,7 +29,7 @@ export function parseGlossary(md: string): Map<string, GlossaryEntry> {
   let current: GlossaryEntry | null = null;
   for (const line of md.split(/\r?\n/)) {
     const heading = HEADING.exec(line);
-    if (heading?.[1] && !heading[1].includes('표시')) {
+    if (heading?.[1]) {
       current = { term: heading[1], starred: Boolean(heading[2]), hint: '', detail: [] };
       entries.set(current.term, current);
       continue;

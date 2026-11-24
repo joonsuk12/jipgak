@@ -1,7 +1,7 @@
 import { products } from '@jipgak/rules-data';
 import { evaluate, type Rule } from '@jipgak/rules-engine';
 import { describe, expect, it } from 'vitest';
-import { formatManWon, todayISO } from '../src/format';
+import { decimalOnly, formatManWon, todayISO } from '../src/format';
 import {
   type Answers,
   emptyAnswers,
@@ -75,6 +75,15 @@ describe('위저드 답 → 엔진 입력', () => {
     expect(under.jeonse.estimatedLimit).toBeUndefined();
   });
 
+  it('소수점 면적 84.97㎡는 85㎡ 이하로 판정 (리뷰 지적 1)', () => {
+    const a = p01();
+    const r = run({ ...a, purchase: { ...a.purchase, area: '84.97' } });
+    expect(toProfile({ ...a, purchase: { ...a.purchase, area: '84.97' } }).purchase?.areaM2).toBe(
+      84.97,
+    );
+    expect(r.purchase.status).toBe('eligible');
+  });
+
   it('수도권이면 규제지역 답은 무시', () => {
     const a = p01();
     const profile = toProfile({ ...a, purchase: { ...a.purchase, regulated: 'yes' } });
@@ -122,6 +131,12 @@ describe('format', () => {
     expect(formatManWon(50000)).toBe('5억 원');
     expect(formatManWon(35000)).toBe('3억 5,000만 원');
     expect(formatManWon(0)).toBe('0만 원');
+  });
+  it('면적 입력은 소수점 하나, 둘째 자리까지', () => {
+    expect(decimalOnly('84.97㎡')).toBe('84.97');
+    expect(decimalOnly('84.975')).toBe('84.97');
+    expect(decimalOnly('8.4.9')).toBe('8.49');
+    expect(decimalOnly('59')).toBe('59');
   });
   it('오늘 날짜', () => {
     expect(todayISO(new Date(2026, 0, 5))).toBe('2026-01-05');

@@ -1,5 +1,5 @@
 import { useId, type ReactNode } from 'react';
-import { digitsOnly, formatManWon } from '../../format';
+import { decimalOnly, digitsOnly, formatManWon } from '../../format';
 import { Help } from '../../components/Help';
 import type { TermKey } from '../../glossary';
 import type { Amount, Choice } from './answers';
@@ -103,6 +103,7 @@ export function NumberField({
   label,
   showMoney = true,
   placeholder = '숫자만 입력',
+  decimals = false,
 }: {
   value: Amount;
   onChange: (next: Amount) => void;
@@ -110,6 +111,8 @@ export function NumberField({
   label: string;
   showMoney?: boolean;
   placeholder?: string;
+  /** 소수점 입력 허용 (면적) */
+  decimals?: boolean;
 }) {
   const id = useId();
   const unknown = value === null;
@@ -129,13 +132,15 @@ export function NumberField({
         >
           <input
             id={id}
-            inputMode="numeric"
+            inputMode={decimals ? 'decimal' : 'numeric'}
             autoComplete="off"
             disabled={unknown}
             placeholder={unknown ? '모름으로 판정해요' : placeholder}
             className="w-full min-w-0 bg-transparent focus-visible:outline-none text-[17px] tabular-nums text-ink outline-none placeholder:text-[15px] placeholder:text-ink-soft/70 disabled:cursor-not-allowed"
             value={value ?? ''}
-            onChange={(e) => onChange(digitsOnly(e.target.value))}
+            onChange={(e) =>
+              onChange(decimals ? decimalOnly(e.target.value) : digitsOnly(e.target.value))
+            }
           />
           <span className="shrink-0 pl-2 text-sm text-ink-soft">{unit}</span>
         </div>

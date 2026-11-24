@@ -29,9 +29,9 @@ const oneOf =
   (v): v is T | null =>
     v === null || (typeof v === 'string' && (allowed as string[]).includes(v));
 
-/** 금액: 숫자만 든 문자열, 빈 문자열, 또는 null(모름) */
+/** 금액·면적: 숫자(면적은 소수 둘째 자리까지) 문자열, 빈 문자열, 또는 null(모름) */
 const isAmount: Check<string | null> = (v): v is string | null =>
-  v === null || (typeof v === 'string' && /^\d{0,12}$/.test(v));
+  v === null || (typeof v === 'string' && /^\d{0,12}(\.\d{0,2})?$/.test(v));
 
 const isDate: Check<string | null> = (v): v is string | null =>
   v === null || (typeof v === 'string' && (v === '' || /^\d{4}-\d{2}-\d{2}$/.test(v)));
@@ -123,5 +123,16 @@ export function clearWizard(storage: KeyValueStorage): void {
 
 /** 저장해 둘 만한 답이 있는지 (목적만 고른 상태도 포함) */
 export function hasAnyAnswer(a: Answers): boolean {
-  return JSON.stringify(a) !== JSON.stringify(emptyAnswers());
+  return !sameValue(a, emptyAnswers());
+}
+
+/** 키 순서와 상관없이 값이 같은지 (답 객체는 문자열·null·평범한 객체로만 이뤄짐) */
+function sameValue(x: unknown, y: unknown): boolean {
+  if (x === y) return true;
+  if (!x || !y || typeof x !== 'object' || typeof y !== 'object') return false;
+  const xr = x as Record<string, unknown>;
+  const yr = y as Record<string, unknown>;
+  const keys = new Set([...Object.keys(xr), ...Object.keys(yr)]);
+  for (const k of keys) if (!sameValue(xr[k], yr[k])) return false;
+  return true;
 }

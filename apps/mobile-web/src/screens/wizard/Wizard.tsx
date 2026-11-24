@@ -28,7 +28,10 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
   // 지난번 답을 기기에서 불러옵니다(D-22). 없거나 깨졌으면 빈 답으로 시작합니다.
   const [saved] = useState(() => loadWizard(deviceStorage()));
   const [answers, setAnswers] = useState<Answers>(() => saved?.answers ?? emptyAnswers());
-  const [index, setIndex] = useState(() => saved?.index ?? 0);
+  // 저장된 단계가 지금 답으로 보이는 단계 범위를 넘으면 마지막 단계로 맞춥니다.
+  const [index, setIndex] = useState(() =>
+    saved ? Math.min(saved.index, visibleSteps(saved.answers).length - 1) : 0,
+  );
   const [restored, setRestored] = useState(() => saved !== null && hasAnyAnswer(saved.answers));
   /** 결과에서 "답하러 가기"로 왔으면 다음 버튼이 결과로 바로 돌아갑니다. */
   const [fromResult, setFromResult] = useState(false);
@@ -64,11 +67,15 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
   };
 
   const update = (patch: Partial<Answers>) => setAnswers((a) => ({ ...a, ...patch }));
-  const go = (next: number) => setIndex(Math.max(0, Math.min(next, steps.length - 1)));
+  const go = (next: number) => {
+    setRestored(false);
+    setIndex(Math.max(0, Math.min(next, steps.length - 1)));
+  };
   const fix = (ruleId: string, conditionId: string) => {
     const target = stepForCondition(ruleId, conditionId);
     const i = target ? steps.indexOf(target) : -1;
     if (i < 0) return;
+    setRestored(false);
     setFromResult(true);
     setIndex(i);
   };
@@ -80,17 +87,19 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
     return ruleIdsFor(answers)
       .map((id) => ruleSet.rules.find((r) => r.id === id))
       .filter((r) => r !== undefined)
-      .map((rule) => ({ rule, result: evaluate(rule, profile, { asOf }) }));
+      .map((rule) => {
+        // 규칙 데이터에 문제가 있어도 화면 전체가 깨지지 않게 상품별로 오류를 보여 줍니다.
+        try {
+          return { rule, result: evaluate(rule, profile, { asOf }) };
+        } catch {
+          return { rule, error: true as const };
+        }
+      });
   }, [isResult, answers, ruleSet]);
 
   const body = {
     purpose: (
       <div className="space-y-9">
-        {restored && (
-          <p role="status" className="bg-pine-soft px-3 py-2 text-sm leading-6 text-ink">
-            지난번에 입력한 내용을 불러왔어요. &lsquo;다음&rsquo;을 눌러 이어서 할 수 있어요.
-          </p>
-        )}
         <PurposeStep a={answers} update={update} />
         <StoredNotice hasAnswers={hasAnyAnswer(answers)} onClear={reset} />
       </div>
@@ -103,15 +112,24 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
     jeonseHome: <JeonseHomeStep a={answers} update={update} />,
     result: (
       <div className="space-y-12">
-        <ResultSummary items={results} />
-        {results.map(({ rule, result }) => (
-          <ResultCard
-            key={rule.id}
-            rule={rule}
-            result={result}
-            onFix={(conditionId) => fix(rule.id, conditionId)}
-          />
-        ))}
+        <ResultSummary
+          items={results.flatMap((r) => (r.result ? [{ rule: r.rule, result: r.result }] : []))}
+        />
+        {results.map((r) =>
+          r.result ? (
+            <ResultCard
+              key={r.rule.id}
+              rule={r.rule}
+              result={r.result}
+              onFix={(conditionId) => fix(r.rule.id, conditionId)}
+            />
+          ) : (
+            <p key={r.rule.id} role="alert" className="bg-seal-soft px-3 py-2 text-sm leading-6">
+              {r.rule.name}을(를) 판정하지 못했어요. 규칙 데이터에 문제가 있어요. 앱을 새로고침해도
+              같으면 잠시 뒤 다시 시도해 주세요.
+            </p>
+          ),
+        )}
         <p className="text-sm leading-6 text-ink-soft">
           참고용 결과예요. 실제 자격과 한도는 기금 수탁은행 심사로 정해져요.
         </p>
@@ -153,6 +171,12 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
         >
           {STEP_META[stepId].title}
         </h1>
+        {restored && (
+          <p role="status" className="mb-8 bg-pine-soft px-3 py-2 text-sm leading-6 text-ink">
+            지난번에 입력한 내용을 불러왔어요. 이어서 하면 돼요. 처음부터 하려면 첫 화면에서
+            &lsquo;입력 지우기&rsquo;를 누르세요.
+          </p>
+        )}
         {body}
       </main>
 

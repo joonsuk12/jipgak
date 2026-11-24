@@ -1,6 +1,13 @@
 import { products } from '@jipgak/rules-data';
 import { describe, expect, it } from 'vitest';
-import { evaluateNode, FACT_KEYS, fullYearsBetween, parseDuration, shiftDate } from '../src';
+import {
+  evaluateNode,
+  FACT_KEYS,
+  fullYearsBetween,
+  parseDuration,
+  shiftDate,
+  evaluate,
+} from '../src';
 import type { ConditionNode, Facts, Rule } from '../src';
 
 function collectFacts(value: unknown, out: Set<string>): Set<string> {
@@ -52,5 +59,30 @@ describe('3값 논리', () => {
       evaluateNode({ id: 'x', label: 'x', fact: 'nope', op: '==', value: 1 }, ctx),
     ).toThrow();
     expect(() => evaluateNode({ ref: 'missing' }, ctx)).toThrow();
+  });
+});
+
+describe('안내 문구', () => {
+  it('불가 결과에는 신청 안내를 붙이지 않는다', () => {
+    const rule = (products as Rule[]).find((r) => r.id === 'loan-newlywed-purchase')!;
+    const result = evaluate(
+      rule,
+      {
+        applicant: { annualIncome: 65_000_000 },
+        spouse: { annualIncome: 25_000_000 },
+        marriage: { status: 'married', date: '2023-05-01' },
+        netAssets: 300_000_000,
+        household: {},
+        purchase: {
+          region: { metro: true },
+          price: 500_000_000,
+          areaM2: 84,
+          contractSigned: false,
+        },
+      },
+      { asOf: '2026-11-17' },
+    );
+    expect(result.status).toBe('ineligible');
+    expect(result.notes).toEqual([]);
   });
 });

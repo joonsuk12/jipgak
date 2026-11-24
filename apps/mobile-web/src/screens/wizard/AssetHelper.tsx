@@ -17,10 +17,13 @@ import { NumberField } from './fields';
  */
 export function AssetHelper({
   values,
+  current,
   onChange,
   onApply,
 }: {
   values: AssetItemValues;
+  /** 지금 순자산 칸의 값. 계산서 합계와 다르면 알려 줍니다. */
+  current: Amount;
   onChange: (next: AssetItemValues) => void;
   onApply: (netAssets: Amount) => void;
 }) {
@@ -31,8 +34,26 @@ export function AssetHelper({
 
   const set = (key: AssetKey, v: Amount) => onChange({ ...values, [key]: v });
 
+  // 계산서를 쓴 적이 있는데 순자산 칸과 합계가 다르면(넣은 뒤 항목을 고친 경우 등) 알려 줍니다.
+  const mismatch = !open && answer !== undefined && answer !== current;
+
   return (
     <div className="space-y-4">
+      {mismatch && (
+        <div role="status" className="space-y-2 bg-amber-soft px-3 py-2 text-sm leading-6 text-ink">
+          <p>
+            계산서 합계({answer === null ? '모름' : formatManWon(Number(answer))})와 순자산 칸이
+            달라요.
+          </p>
+          <button
+            type="button"
+            className="font-medium text-pine underline underline-offset-2"
+            onClick={() => onApply(answer)}
+          >
+            계산서 합계로 바꾸기
+          </button>
+        </div>
+      )}
       <button
         type="button"
         aria-expanded={open}
