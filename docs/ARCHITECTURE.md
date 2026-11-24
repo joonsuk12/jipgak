@@ -46,7 +46,7 @@ jipgak/
 │  └─ src/
 │     ├─ screens/
 │     ├─ data/                sources.ts · static/ · api/(빈 자리) · factory.ts
-│     └─ platform/            storage · notify · share (web / native)
+│     └─ platform/            storage(구현됨, D-22) · notify · share (web / native)
 ├─ public-config/config.json
 ├─ services/                  (v3) notice-job/, api/ — Python
 ├─ tools/rule-drafter/        (v1 이후) 공고문 → 규칙 JSON 초안 (Python + LLM)

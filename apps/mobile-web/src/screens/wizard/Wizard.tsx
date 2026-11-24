@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { evaluate, type RuleSet } from '@jipgak/rules-engine';
 import { ResultCard, ResultSummary } from '../../components/ResultCard';
 import { todayISO } from '../../format';
+import { deviceStorage } from '../../platform/storage';
 import {
   type Answers,
   emptyAnswers,
@@ -10,6 +11,7 @@ import {
   toProfile,
   visibleSteps,
 } from './answers';
+import { clearWizard, hasAnyAnswer, loadWizard, saveWizard } from './answersStore';
 import {
   AssetsStep,
   HistoryStep,
@@ -23,8 +25,11 @@ import {
 
 /** 입력 위저드: 한 화면에 한 주제씩 묻고, 마지막에 기기 안에서 판정합니다. */
 export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
-  const [answers, setAnswers] = useState<Answers>(emptyAnswers);
-  const [index, setIndex] = useState(0);
+  // 지난번 답을 기기에서 불러옵니다(D-22). 없거나 깨졌으면 빈 답으로 시작합니다.
+  const [saved] = useState(() => loadWizard(deviceStorage()));
+  const [answers, setAnswers] = useState<Answers>(() => saved?.answers ?? emptyAnswers());
+  const [index, setIndex] = useState(() => saved?.index ?? 0);
+  const [restored, setRestored] = useState(() => saved !== null && hasAnyAnswer(saved.answers));
   /** 결과에서 "답하러 가기"로 왔으면 다음 버튼이 결과로 바로 돌아갑니다. */
   const [fromResult, setFromResult] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -42,6 +47,21 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
     window.scrollTo({ top: 0 });
     headingRef.current?.focus();
   }, [stepId]);
+
+  // 답이 바뀔 때마다 이 기기에만 저장합니다. 서버·로그로는 보내지 않습니다.
+  useEffect(() => {
+    const storage = deviceStorage();
+    if (hasAnyAnswer(answers)) saveWizard(storage, { answers, index });
+    else clearWizard(storage);
+  }, [answers, index]);
+
+  const reset = () => {
+    clearWizard(deviceStorage());
+    setAnswers(emptyAnswers());
+    setFromResult(false);
+    setRestored(false);
+    setIndex(0);
+  };
 
   const update = (patch: Partial<Answers>) => setAnswers((a) => ({ ...a, ...patch }));
   const go = (next: number) => setIndex(Math.max(0, Math.min(next, steps.length - 1)));
@@ -64,7 +84,17 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
   }, [isResult, answers, ruleSet]);
 
   const body = {
-    purpose: <PurposeStep a={answers} update={update} />,
+    purpose: (
+      <div className="space-y-9">
+        {restored && (
+          <p role="status" className="bg-pine-soft px-3 py-2 text-sm leading-6 text-ink">
+            지난번에 입력한 내용을 불러왔어요. &lsquo;다음&rsquo;을 눌러 이어서 할 수 있어요.
+          </p>
+        )}
+        <PurposeStep a={answers} update={update} />
+        <StoredNotice hasAnswers={hasAnyAnswer(answers)} onClear={reset} />
+      </div>
+    ),
     marriage: <MarriageStep a={answers} update={update} />,
     income: <IncomeStep a={answers} update={update} />,
     assets: <AssetsStep a={answers} update={update} />,
@@ -140,11 +170,7 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
               <button
                 type="button"
                 className="min-h-12 flex-1 rounded-md bg-ink px-4 font-semibold text-paper"
-                onClick={() => {
-                  setAnswers(emptyAnswers());
-                  setFromResult(false);
-                  setIndex(0);
-                }}
+                onClick={reset}
               >
                 처음부터 다시
               </button>
@@ -177,5 +203,26 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
         </div>
       </nav>
     </div>
+  );
+}
+
+/** 저장 안내와 지우기. 공용 기기에서 쓰는 사람을 위해 첫 화면에 늘 보여 줍니다. */
+function StoredNotice({ hasAnswers, onClear }: { hasAnswers: boolean; onClear: () => void }) {
+  return (
+    <p className="text-sm leading-6 text-ink-soft">
+      입력한 내용은 서버로 보내지 않고 이 기기에만 저장해요.
+      {hasAnswers && (
+        <>
+          {' '}
+          <button
+            type="button"
+            className="font-medium text-pine underline underline-offset-2"
+            onClick={onClear}
+          >
+            입력 지우기
+          </button>
+        </>
+      )}
+    </p>
   );
 }

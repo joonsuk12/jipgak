@@ -69,7 +69,7 @@ export function PurposeStep({ a, update }: StepProps) {
         />
       </Question>
       <p className="text-sm leading-6 text-ink-soft">
-        입력한 내용은 이 기기 밖으로 나가지 않아요. 모르는 항목은 &lsquo;모름&rsquo;을 고르면 돼요.
+        모르는 항목은 &lsquo;모름&rsquo;을 고르면 돼요.
       </p>
     </Stack>
   );

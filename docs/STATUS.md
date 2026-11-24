@@ -28,12 +28,12 @@
    - [ ] 청약저축(금리 우대)은 위저드에서 아직 묻지 않음
 5. [x] 화면 용어 도움말 (D-16, 2026-11-23): `docs/GLOSSARY.md`를 빌드 때 `?raw`로 읽어 `src/glossary.ts`가 파싱. 질문·결과에 한 줄 안내 + "자세히"(`components/Help.tsx`). 화면에서 쓰는 용어 목록은 `TERM`, 빠진 용어·개발자 메모 노출은 `test/glossary.test.ts`가 잡음
 6. [x] 순자산 계산 도우미 (D-18, 2026-11-24): 순자산 단계의 "모르겠으면 항목별로 계산하기" → 더하는 것 9개·빼는 것 3개 계산서 → "이 금액으로 넣기". 항목·안내는 `screens/wizard/assetItems.ts`(기준 `docs/sources/income-and-assets.md` 2절), 합산 `sumAssetItems`(+`test/assetItems.test.ts`). 하나라도 모름이면 합계 모름, 빚이 더 많으면 0. 엔진에는 합계만 넘김
-7. [ ] `src/platform/storage` (입력값은 기기에만 저장)
+7. [x] 입력값 기기 저장 (D-22, 2026-11-24): `src/platform/storage.ts`(웹 localStorage, 막히면 메모리), `screens/wizard/answersStore.ts`(버전 키, 값 검사 후 복원), 위저드 자동 저장·이어 하기·"입력 지우기". 테스트 `test/storage.test.ts`
 8. [ ] 출시 전: 글꼴(Gowun Batang, IBM Plex Sans KR)을 Google Fonts 대신 자체 호스팅으로 바꿀지 검토(외부 요청 최소화)
 9. [ ] Cloudflare Pages 배포(`*.pages.dev`), 면책 문구, 개인정보 처리방침, 분석(입력값 제외)
 
 ## 다음 세션 메모
-- **다음 세션 시작점 (2026-11-23):** 입력 위저드·결과 화면·도움말·테스트 재점검 완료(테스트 96개 통과). 순자산 도우미까지 완료(테스트 102개). 다음은 입력값 기기 저장(7번) → v1 단계 마무리 `/code-review`. 사용자 대기: GitHub 레포 생성 후 push·CI 확인, REVIEW 2-10 콜센터 확인. 화면 작업 전에 `frontend-design` 스킬을 먼저 불러오고, 디자인 토큰은 D-20을 따름. 위저드는 `/`, 개발용 테스트 화면은 `/#/dev`
+- **다음 세션 시작점 (2026-11-23):** 입력 위저드·결과 화면·도움말·테스트 재점검 완료(테스트 96개 통과). 입력값 기기 저장까지 완료(테스트 108개). 다음은 v1 단계 마무리 점검(`/code-review`, 사용자 전역 규칙상 "코드리뷰"는 `mattpocock-skills:code-review`) → 출시 준비(8~9번: 글꼴 자체 호스팅 검토, 규칙 번들 빌드, 배포 전 `/security-review`). 사용자 대기: GitHub 레포 생성 후 push·CI 확인, REVIEW 2-10 콜센터 확인. 화면 작업 전에 `frontend-design` 스킬을 먼저 불러오고, 디자인 토큰은 D-20을 따름. 위저드는 `/`, 개발용 테스트 화면은 `/#/dev`
 - 사용자: GitHub 비공개 레포 생성 후 알려 주면 push·CI 첫 실행을 함께 확인
 - 다음 출처 재검증 예정: 2027-02 (분기, D-17). 2027년도 순자산 기준은 통계청 발표 후 바뀜
 - pnpm은 `corepack enable pnpm --install-directory "$APPDATA/npm"`로 설치함 (Program Files 쓰기 권한 없음). pnpm 12.21.0
