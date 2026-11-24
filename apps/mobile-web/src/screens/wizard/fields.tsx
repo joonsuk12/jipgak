@@ -102,12 +102,14 @@ export function NumberField({
   unit,
   label,
   showMoney = true,
+  placeholder = '숫자만 입력',
 }: {
   value: Amount;
   onChange: (next: Amount) => void;
   unit: string;
   label: string;
   showMoney?: boolean;
+  placeholder?: string;
 }) {
   const id = useId();
   const unknown = value === null;
@@ -122,7 +124,7 @@ export function NumberField({
           className={`flex min-h-12 flex-1 items-center rounded-md px-4 ${
             unknown
               ? 'border border-dashed border-rule bg-paper'
-              : 'border border-rule bg-sheet focus-within:border-pine'
+              : 'border border-rule bg-sheet focus-within:border-pine focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-pine'
           }`}
         >
           <input
@@ -130,8 +132,8 @@ export function NumberField({
             inputMode="numeric"
             autoComplete="off"
             disabled={unknown}
-            placeholder={unknown ? '모름으로 판정해요' : '숫자만 입력'}
-            className="w-full min-w-0 bg-transparent text-[17px] tabular-nums text-ink outline-none placeholder:text-[15px] placeholder:text-ink-soft/70 disabled:cursor-not-allowed"
+            placeholder={unknown ? '모름으로 판정해요' : placeholder}
+            className="w-full min-w-0 bg-transparent focus-visible:outline-none text-[17px] tabular-nums text-ink outline-none placeholder:text-[15px] placeholder:text-ink-soft/70 disabled:cursor-not-allowed"
             value={value ?? ''}
             onChange={(e) => onChange(digitsOnly(e.target.value))}
           />

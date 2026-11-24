@@ -8,6 +8,7 @@ import {
   wantsPurchase,
 } from './answers';
 import { todayISO } from '../../format';
+import { AssetHelper } from './AssetHelper';
 import { ChoiceGroup, DateField, Help, NumberField, Question } from './fields';
 
 /** 단계별 제목(질문)과 진행 표시용 짧은 이름 */
@@ -158,6 +159,11 @@ export function AssetsStep({ a, update }: StepProps) {
           onChange={(v) => update({ netAssets: v })}
         />
       </Question>
+      <AssetHelper
+        values={a.assetItems}
+        onChange={(assetItems) => update({ assetItems })}
+        onApply={(netAssets) => update({ netAssets })}
+      />
     </Stack>
   );
 }

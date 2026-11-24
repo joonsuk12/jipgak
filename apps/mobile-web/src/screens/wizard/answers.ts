@@ -1,4 +1,5 @@
 import type { UserProfile } from '@jipgak/rules-engine';
+import { type AssetItemValues, emptyAssetItems } from './assetItems';
 
 /**
  * 입력 위저드의 답. 화면 상태 그대로이며, toProfile()로 엔진 입력(UserProfile)으로 바꿉니다.
@@ -31,6 +32,8 @@ export interface Answers {
   applicantIncome: Amount;
   spouseIncome: Amount;
   netAssets: Amount;
+  /** 순자산 계산 도우미의 항목별 값. 엔진에는 합계(netAssets)만 넘깁니다. */
+  assetItems: AssetItemValues;
   allHomeless: YesNo;
   everOwnedHome: YesNo;
   everHadFundPurchaseLoan: YesNo;
@@ -60,6 +63,7 @@ export function emptyAnswers(): Answers {
     applicantIncome: '',
     spouseIncome: '',
     netAssets: '',
+    assetItems: emptyAssetItems(),
     allHomeless: null,
     everOwnedHome: null,
     everHadFundPurchaseLoan: null,
