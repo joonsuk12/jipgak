@@ -136,7 +136,15 @@ export function ApplyGuide({ ruleIds }: { ruleIds: string[] }) {
         기준이 달라 이 결과가 맞지 않을 수 있어요.
       </p>
       <p className="text-sm leading-6 text-ink-soft">
-        참고용 결과예요. 실제 자격과 한도는 기금 수탁은행 심사로 정해져요.
+        참고용 결과예요. 실제 자격과 한도는 기금 수탁은행 심사로 정해져요. 집각은 정책 원문을 옮겨
+        판정하지만 오류가 있을 수 있고, 이 결과로 생긴 손해를 책임지지 않아요. 정책은 바뀔 수 있으니
+        신청 전에 원문과 수탁은행에서 꼭 확인하세요.
+      </p>
+      <p className="text-sm leading-6 text-ink-soft">
+        입력한 내용은 이 기기에만 저장돼요.{' '}
+        <a className={link} href="#/privacy">
+          개인정보 처리방침
+        </a>
       </p>
     </section>
   );

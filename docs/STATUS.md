@@ -25,7 +25,7 @@
 1. [x] **검증 (2026-11-26):** 결과는 `docs/sources/official-calculator-check.md`. 전세(J01·J02·J04, 금리표 16칸)와 자격 기준은 일치. **구입자금 한도 불일치(P01·P02·P09):** 공식은 지역별 소액임차보증금(서울 5,500만 등)을 빼는데 집각은 0으로 가정. 수정 방식은 사용자 결정 대기
 2. [x] **규칙 보강 (2026-11-26):** 소액임차보증금 공제(D-27), 기한이익상실 이력 안내(두 상품 manualChecks), 접수일 기준 날짜 안내 `Result.timing`·DTI 간이 계산 `Result.dti`(D-28, 골든 P19·P20 및 DTI 3건). 화면 표시는 3단계
 3. [x] **화면 (2026-11-26):** 결과 카드에 접수일 날짜 안내(제목 아래, expires=amber·opens=pine)와 DTI 경고(한도 밑, 요약 줄에도 표시), 결과 맨 위에 "1차 판정" 문구와 기준 오래됨 경고(확인일 + 4개월), 맨 아래 "신청하려면"(계약 → 기한 → 기금e든든·수탁은행 → 제출서류 링크, 공식 마법사 링크, 상담 1566-9009, 특수 대상 안내). 위저드: 자녀 질문 제거(엔진 기능 유지), 구입자금 청약통장 구간 질문, 소득 "자세히"에 사회초년생 기준. 코드 `components/ResultCard.tsx`, `screens/wizard/ResultGuide.tsx`
-4. [ ] **출시 필수:** 면책 문구(첫 화면·결과), 개인정보 처리방침 페이지(입력값 기기 저장만·전송 없음·지우는 법), 글꼴 자체 호스팅
+4. [x] **출시 필수 (2026-11-26):** 글꼴을 Fontsource npm 패키지로 앱에 포함하고 Google Fonts 링크 삭제(브라우저 요청이 localhost 한 곳뿐임을 확인). 개인정보 처리방침 `/#/privacy`(`screens/PrivacyPolicy.tsx`: 수집 없음, 기기 저장 키와 지우는 법, 호스팅 접속 기록, 외부 링크, 제3자 제공 없음, 시행일 2026-11-26). 면책 문구: 첫 화면(참고용 1차 판정 + 처리방침 링크), 결과 맨 아래(오류 가능·손해 불책임·원문 확인 + 처리방침 링크). 문의처는 사용자가 정할 때까지 처리방침에서 숨김(D-29)
 5. [ ] **점검:** `/code-review`, `/security-review`(입력값 무전송), TEST-CASES 갱신
 6. [ ] **배포:** GitHub 비공개 레포 생성·push(`gh repo create jipgak --private --source . --remote origin --push`, 사용자 확인 후), CI 확인, Cloudflare Pages `*.pages.dev`에 올려 운영자 부부가 먼저 사용
 
@@ -45,7 +45,7 @@
 10. [ ] Cloudflare Pages 배포(`*.pages.dev`), 면책 문구, 개인정보 처리방침, 분석(입력값 제외)
 
 ## 다음 세션 메모
-- **다음 세션 시작점 (2026-11-26):** 출시 전 작업 1~3단계 완료(테스트 134개). 다음은 4단계: 면책 문구(첫 화면·결과), 개인정보 처리방침 페이지, 글꼴 자체 호스팅. 그다음 5단계 점검(`/code-review`, `/security-review`), 6단계 GitHub·배포
+- **다음 세션 시작점 (2026-11-26):** 출시 전 작업 1~4단계 완료(테스트 134개). 다음은 5단계 점검(`/code-review`, `/security-review`), 그다음 6단계 GitHub·배포
 - 사용자: GitHub 비공개 레포 생성 후 알려 주면 push·CI 첫 실행을 함께 확인
 - 다음 출처 재검증 예정: 2027-02 (분기, D-17). 2027년도 순자산 기준은 통계청 발표 후 바뀜
 - pnpm은 `corepack enable pnpm --install-directory "$APPDATA/npm"`로 설치함 (Program Files 쓰기 권한 없음). pnpm 12.21.0
@@ -58,6 +58,7 @@
 - [ ] `jipgak.kr` 또는 `jipgak.com` 도메인 구매
 - [ ] 골든 케이스: 원문 대조는 끝남. `docs/REVIEW.md` 3번의 남은 제품 판단 1건만 확인
 - [ ] GitHub 원격 레포 생성 (비공개 권장) 후 push
+- [ ] 개인정보 처리방침 문의처 정하기(공개 전 필수. 정하면 `screens/PrivacyPolicy.tsx`의 `CONTACT`에 넣음)
 
 ## 확인 필요 (정책·규칙)
 

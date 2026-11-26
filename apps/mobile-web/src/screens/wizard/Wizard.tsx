@@ -233,20 +233,26 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
 /** 저장 안내와 지우기. 공용 기기에서 쓰는 사람을 위해 첫 화면에 늘 보여 줍니다. */
 function StoredNotice({ hasAnswers, onClear }: { hasAnswers: boolean; onClear: () => void }) {
   return (
-    <p className="text-sm leading-6 text-ink-soft">
-      입력한 내용은 서버로 보내지 않고 이 기기에만 저장해요.
-      {hasAnswers && (
-        <>
-          {' '}
-          <button
-            type="button"
-            className="font-medium text-pine underline underline-offset-2"
-            onClick={onClear}
-          >
-            입력 지우기
-          </button>
-        </>
-      )}
-    </p>
+    <div className="space-y-2 text-sm leading-6 text-ink-soft">
+      <p>집각의 결과는 참고용 1차 판정이에요. 실제 자격과 한도는 기금 수탁은행 심사로 정해져요.</p>
+      <p>
+        입력한 내용은 서버로 보내지 않고 이 기기에만 저장해요.
+        {hasAnswers && (
+          <>
+            {' '}
+            <button
+              type="button"
+              className="font-medium text-pine underline underline-offset-2"
+              onClick={onClear}
+            >
+              입력 지우기
+            </button>
+          </>
+        )}{' '}
+        <a className="underline underline-offset-2" href="#/privacy">
+          개인정보 처리방침
+        </a>
+      </p>
+    </div>
   );
 }
