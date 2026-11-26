@@ -19,17 +19,17 @@ function run(id: string) {
 
 describe('테스트 화면 프리셋 = 골든 케이스', () => {
   it.each([
-    ['P01', 'eligible', 32_000, 'eligible', 24_000],
-    ['P02', 'eligible', 32_000, 'ineligible', undefined],
+    ['P01', 'eligible', 29_500, 'eligible', 24_000],
+    ['P02', 'eligible', 29_500, 'ineligible', undefined],
     ['P03', 'ineligible', undefined, 'ineligible', undefined],
-    ['P05', 'eligible', 32_000, 'eligible', 24_000],
+    ['P05', 'eligible', 29_500, 'eligible', 24_000],
     ['P06', 'ineligible', undefined, 'ineligible', undefined],
-    ['P09', 'eligible', 24_000, 'eligible', 16_000],
-    ['P11', 'needs_check', 32_000, 'needs_check', 24_000],
-    ['J10', 'needs_check', 32_000, 'needs_check', 24_000],
-    ['C1', 'eligible', 32_000, 'eligible', 24_000],
+    ['P09', 'eligible', 21_500, 'eligible', 16_000],
+    ['P11', 'needs_check', 29_500, 'needs_check', 24_000],
+    ['J10', 'needs_check', 29_500, 'needs_check', 24_000],
+    ['C1', 'eligible', 29_500, 'eligible', 24_000],
     ['P14', 'ineligible', undefined, 'eligible', 24_000],
-    ['P15', 'eligible', 24_000, 'eligible', 24_000],
+    ['P15', 'eligible', 21_500, 'eligible', 24_000],
   ] as const)('%s', (id, pStatus, pLimit, jStatus, jLimit) => {
     const r = run(id);
     expect(r.purchase.status).toBe(pStatus);

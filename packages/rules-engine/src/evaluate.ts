@@ -39,6 +39,7 @@ export function createContext(rule: Rule, profile: UserProfile, options: EvalOpt
     facts: computeFacts(profile, options),
     asOf: options.asOf,
     definitions: rule.definitions ?? {},
+    lookups: rule.lookups ?? {},
   };
 }
 

@@ -43,7 +43,7 @@ describe('dates', () => {
 
 describe('3값 논리', () => {
   const facts: Facts = { 'assets.net': null, 'children.count': 1 };
-  const ctx = { facts, asOf: '2026-11-17', definitions: {} };
+  const ctx = { facts, asOf: '2026-11-17', definitions: {}, lookups: {} };
   const unknown: ConditionNode = { id: 'a', label: 'a', fact: 'assets.net', op: '<=', value: 1 };
   const yes: ConditionNode = { id: 'b', label: 'b', fact: 'children.count', op: '==', value: 1 };
   const no: ConditionNode = { id: 'c', label: 'c', fact: 'children.count', op: '>', value: 1 };

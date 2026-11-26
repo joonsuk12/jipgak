@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { evaluate, type RuleSet } from '@jipgak/rules-engine';
 import { ResultCard } from '../../components/ResultCard';
+import { ALL_ZONE_IDS } from '../wizard/zones';
 import { todayISO } from '../../format';
 import { BASE_FORM, PRESETS, toProfile, type FormState, type Tri } from './form';
 
@@ -147,6 +148,20 @@ export function Playground({ ruleSet }: { ruleSet: RuleSet }) {
       <Group title="구입하려는 집">
         {metroSelect('purchaseMetro')}
         {triSelect('purchaseRegulated', '규제지역')}
+        <Field label="세부 지역 코드 (소액임차보증금)">
+          <select
+            className="w-full rounded border border-slate-300 px-2 py-1"
+            value={form.purchaseZone}
+            onChange={(e) => set('purchaseZone', e.target.value)}
+          >
+            <option value="">모름 (최대 공제)</option>
+            {ALL_ZONE_IDS.map((z) => (
+              <option key={z} value={z}>
+                {z}
+              </option>
+            ))}
+          </select>
+        </Field>
         {text('purchasePrice', '매매가 (만 원)')}
         {text('purchaseArea', '전용면적 (㎡)')}
         {triSelect('purchaseContract', '매매계약 체결')}

@@ -73,6 +73,7 @@ export const TERM = {
   preferentialRate: '우대금리',
   manualCheck: '직접 확인할 항목',
   status: '가능 / 확인 필요 / 불가',
+  smallTenantDeposit: '소액임차보증금(방공제)',
 } as const;
 
 export type TermKey = keyof typeof TERM;

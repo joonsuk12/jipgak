@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { decimalOnly, formatManWon, m2ToPyeong, pyeongToM2, todayISO } from '../src/format';
 import { describePyeongType } from '../src/screens/wizard/areaTypes';
 import { HOUSEHOLD_AREA } from '../src/screens/wizard/householdArea';
+import { ALL_ZONE_IDS } from '../src/screens/wizard/zones';
 import {
   type Answers,
   emptyAnswers,
@@ -35,7 +36,15 @@ function p01(): Answers {
     hasMortgageLoan: 'no',
     hasJeonseLoan: 'no',
     livesInPublicRental: 'no',
-    purchase: { ...a.purchase, region: 'metro', amount: '50000', area: '84', contract: 'yes' },
+    purchase: {
+      ...a.purchase,
+      region: 'metro',
+      sido: 'seoul',
+      zone: 'seoul',
+      amount: '50000',
+      area: '84',
+      contract: 'yes',
+    },
     jeonse: { ...a.jeonse, region: 'metro', amount: '30000', area: '59', contract: 'yes' },
   };
 }
@@ -52,7 +61,7 @@ describe('위저드 답 → 엔진 입력', () => {
   it('골든 P01·J01과 같은 결과', () => {
     const r = run(p01());
     expect(r.purchase.status).toBe('eligible');
-    expect(r.purchase.estimatedLimit).toBe(320_000_000);
+    expect(r.purchase.estimatedLimit).toBe(295_000_000);
     expect(r.jeonse.status).toBe('eligible');
     expect(r.jeonse.estimatedLimit).toBe(240_000_000);
   });
@@ -89,18 +98,25 @@ describe('위저드 답 → 엔진 입력', () => {
   it('수도권이면 규제지역 답은 무시', () => {
     const a = p01();
     const profile = toProfile({ ...a, purchase: { ...a.purchase, regulated: 'yes' } });
-    expect(profile.purchase?.region).toEqual({ metro: true });
+    expect(profile.purchase?.region).toEqual({ metro: true, zone: 'seoul' });
   });
 
   it('읍·면 답은 수도권 외 85㎡ 초과일 때만 쓴다', () => {
     const a = p01();
-    const local = { ...a.purchase, region: 'local' as const, ruralTownship: 'yes' as const };
+    const local = {
+      ...a.purchase,
+      region: 'local' as const,
+      zone: 'other' as const,
+      ruralTownship: 'yes' as const,
+    };
     expect(toProfile({ ...a, purchase: { ...local, area: '84' } }).purchase?.region).toEqual({
       metro: false,
+      zone: 'other',
     });
     expect(toProfile({ ...a, purchase: { ...local, area: '95' } }).purchase?.region).toEqual({
       metro: false,
       ruralTownship: true,
+      zone: 'other',
     });
   });
 
@@ -124,6 +140,22 @@ describe('조건 → 질문 단계', () => {
   it('면적은 상품에 맞는 집 단계로', () => {
     expect(stepForCondition('loan-newlywed-purchase', 'area')).toBe('purchaseHome');
     expect(stepForCondition('loan-newlywed-jeonse', 'area')).toBe('jeonseHome');
+  });
+});
+
+describe('세부 지역 코드', () => {
+  it('화면의 지역 코드와 규칙의 소액임차보증금 표가 같다', () => {
+    const table = rule('loan-newlywed-purchase').lookups?.smallTenantDeposit?.values ?? {};
+    expect([...ALL_ZONE_IDS].sort()).toEqual(Object.keys(table).sort());
+  });
+  it('지역 코드가 엔진 입력으로 간다', () => {
+    const a = p01();
+    expect(
+      toProfile({ ...a, purchase: { ...a.purchase, zone: 'gyeonggi-2800' } }).purchase?.region,
+    ).toEqual({
+      metro: true,
+      zone: 'gyeonggi-2800',
+    });
   });
 });
 

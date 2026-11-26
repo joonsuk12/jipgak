@@ -9,6 +9,7 @@ import {
 } from './answers';
 import { todayISO } from '../../format';
 import { AreaField } from './AreaField';
+import { ZoneField } from './ZoneField';
 import { AssetHelper } from './AssetHelper';
 import { ChoiceGroup, DateField, Help, NumberField, Question } from './fields';
 
@@ -277,16 +278,20 @@ function HomeStep({
   const purchase = kind === 'purchase';
   return (
     <Stack>
-      <Question label="지역">
-        <ChoiceGroup
-          value={home.region}
-          onChange={(v) => onChange({ region: v })}
-          options={[
-            { value: 'metro', label: '수도권 (서울·인천·경기)' },
-            { value: 'local', label: '그 외 지역' },
-          ]}
-        />
-      </Question>
+      {purchase ? (
+        <ZoneField home={home} onChange={onChange} />
+      ) : (
+        <Question label="지역">
+          <ChoiceGroup
+            value={home.region}
+            onChange={(v) => onChange({ region: v })}
+            options={[
+              { value: 'metro', label: '수도권 (서울·인천·경기)' },
+              { value: 'local', label: '그 외 지역' },
+            ]}
+          />
+        </Question>
+      )}
       {purchase && home.region === 'local' && (
         <Question label="규제지역인가요?" term="regulated">
           <ChoiceGroup

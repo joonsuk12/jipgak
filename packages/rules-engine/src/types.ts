@@ -22,6 +22,11 @@ export interface Region {
   regulated?: boolean;
   /** 수도권 외 도시지역이 아닌 읍·면 */
   ruralTownship?: boolean;
+  /**
+   * 세부 지역 코드(구입자금 소액임차보증금 공제용, 예: 'seoul'). 코드와 금액은 규칙 JSON의 lookups에 있습니다.
+   * undefined = 모름
+   */
+  zone?: string;
 }
 
 export interface Marriage {
@@ -144,7 +149,24 @@ export type ConditionNode = Condition | AllNode | AnyNode | RefNode;
 
 /** 첫 번째로 when이 true인 선택지를 씁니다. when이 없으면 기본값입니다. */
 export type LimitOption =
-  { when?: ConditionNode; amount: Won } | { when?: ConditionNode; ratio: number; of: string };
+  | { when?: ConditionNode; amount: Won }
+  | {
+      when?: ConditionNode;
+      ratio: number;
+      of: string;
+      /** fact × 비율에서 뺄 금액표 이름(rule.lookups). 예: 소액임차보증금 */
+      minus?: string;
+    };
+
+/**
+ * fact 값(코드)별 금액표. 값을 모르면 whenUnknown에 따라 정합니다.
+ * - max: 표에서 가장 큰 금액(보수적으로 계산)
+ */
+export interface Lookup {
+  fact: string;
+  values: Record<string, Won>;
+  whenUnknown: 'max';
+}
 
 /** 한도 항목 하나 (예: 호당 한도, LTV). 최종 한도는 모든 항목의 최솟값입니다. */
 export interface LimitCap {
@@ -229,6 +251,8 @@ export interface Rule {
   source: RuleSource;
   /** 여러 곳에서 쓰는 조건 묶음. { ref: 이름 }으로 참조 */
   definitions?: Record<string, ConditionNode>;
+  /** 코드별 금액표 (한도의 minus에서 참조) */
+  lookups?: Record<string, Lookup>;
   conditions: ConditionNode;
   limit?: LimitSpec;
   rate?: RateSpec;

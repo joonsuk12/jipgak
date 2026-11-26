@@ -1,12 +1,13 @@
 import { parseDuration, shiftDate } from './dates';
 import { isFactKey } from './facts';
-import type { Condition, ConditionNode, FactValue, Facts, Truth } from './types';
+import type { Condition, ConditionNode, FactValue, Facts, Lookup, Truth } from './types';
 
 /** 조건 평가에 필요한 문맥 */
 export interface EvalContext {
   facts: Facts;
   asOf: string;
   definitions: Readonly<Record<string, ConditionNode>>;
+  lookups: Readonly<Record<string, Lookup>>;
 }
 
 const MAX_REF_DEPTH = 16;

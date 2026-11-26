@@ -1,5 +1,6 @@
 import type { UserProfile } from '@jipgak/rules-engine';
 import { type AssetItemValues, emptyAssetItems } from './assetItems';
+import type { SidoId, ZoneId } from './zones';
 
 /**
  * 입력 위저드의 답. 화면 상태 그대로이며, toProfile()로 엔진 입력(UserProfile)으로 바꿉니다.
@@ -12,7 +13,12 @@ export type YesNo = Choice<'yes' | 'no'>;
 export type Amount = string | null;
 
 export interface HomeAnswers {
+  /** 수도권 여부. 구입은 시·도 선택(sido)에서 함께 정해집니다. */
   region: Choice<'metro' | 'local'>;
+  /** 구입만: 시·도 */
+  sido: Choice<SidoId>;
+  /** 구입만: 세부 지역 코드(소액임차보증금 공제용) */
+  zone: Choice<ZoneId>;
   /** 구입만: 규제지역 */
   regulated: YesNo;
   /** 매매가 또는 보증금 (만 원) */
@@ -47,6 +53,8 @@ export interface Answers {
 
 const emptyHome = (): HomeAnswers => ({
   region: null,
+  sido: null,
+  zone: null,
   regulated: null,
   amount: '',
   area: '',
@@ -129,7 +137,9 @@ function compact<T extends object>(obj: { [K in keyof T]: T[K] | undefined }): T
 }
 
 function region(home: HomeAnswers, withRegulated: boolean) {
-  return compact<{ metro: boolean; regulated: boolean; ruralTownship: boolean }>({
+  const zone = home.zone !== null && home.zone !== 'unknown' ? home.zone : undefined;
+  return compact<{ metro: boolean; regulated: boolean; ruralTownship: boolean; zone: string }>({
+    zone: withRegulated ? zone : undefined,
     metro: home.region === 'metro' ? true : home.region === 'local' ? false : undefined,
     regulated: withRegulated && home.region === 'local' ? bool(home.regulated) : undefined,
     ruralTownship: asksRuralTownship(home) ? bool(home.ruralTownship) : undefined,

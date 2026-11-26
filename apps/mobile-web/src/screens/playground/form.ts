@@ -22,6 +22,8 @@ export interface FormState {
   hasJeonseLoan: Tri;
   livesInPublicRental: Tri;
   purchaseMetro: boolean;
+  /** 세부 지역 코드(소액임차보증금). '' = 모름 */
+  purchaseZone: string;
   purchaseRegulated: Tri;
   purchasePrice: string;
   purchaseArea: string;
@@ -49,6 +51,7 @@ export const BASE_FORM: FormState = {
   hasJeonseLoan: 'no',
   livesInPublicRental: 'no',
   purchaseMetro: true,
+  purchaseZone: 'seoul',
   purchaseRegulated: 'no',
   purchasePrice: '50000',
   purchaseArea: '84',
@@ -96,6 +99,7 @@ export const PRESETS: Preset[] = [
       applicantIncome: '1800',
       spouseIncome: '1200',
       purchaseMetro: false,
+      purchaseZone: 'other',
       purchasePrice: '30000',
       jeonseMetro: false,
       jeonseDeposit: '25000',
@@ -114,6 +118,7 @@ export const PRESETS: Preset[] = [
       applicantIncome: '1800',
       spouseIncome: '1200',
       purchaseMetro: false,
+      purchaseZone: 'other',
       purchaseRegulated: 'unknown',
       purchasePrice: '30000',
     },
@@ -173,7 +178,11 @@ export function toProfile(f: FormState): UserProfile {
       birthDate: '2020-01-01',
     })),
     purchase: compact({
-      region: compact({ metro: f.purchaseMetro, regulated: tri(f.purchaseRegulated) }),
+      region: compact({
+        metro: f.purchaseMetro,
+        regulated: tri(f.purchaseRegulated),
+        zone: f.purchaseZone || undefined,
+      }),
       price: money(f.purchasePrice),
       areaM2: num(f.purchaseArea),
       contractSigned: tri(f.purchaseContract),

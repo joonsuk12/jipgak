@@ -50,7 +50,7 @@ pnpm --filter @jipgak/rules-engine exec vitest run -t "P01"             # 이름
   - `definitions` + `{ "ref": 이름 }`으로 공통 조건 재사용
   - 날짜 조건 `withinPast`·`withinNext`, 값은 ISO 기간(`P7Y`, `P3M`)
   - `notes`의 `when`·`unless`: 사용자가 미리 알 수 없는 신청 요건(계약 체결 등)은 상태 대신 안내로 표시(D-15)
-  - `limit.caps[].options`: 처음 `when`이 true인 선택지(금액 또는 fact × 비율). 한도는 cap들의 최솟값
+  - `limit.caps[].options`: 처음 `when`이 true인 선택지(금액 또는 fact × 비율, `minus`로 `lookups` 금액표 값을 뺌. 예: 지역별 소액임차보증금). 한도는 cap들의 최솟값
   - `rate`: 금리표 + `topRowWhen`(1인 소득 → 최고 행) + 가감 + 우대(항목별 1개, 합계 상한) + 하한
 - **의존 방향:** rules-data는 엔진에 의존하지 않습니다(순환 방지). `products`는 `unknown[]`이라 쓰는 쪽에서 `as Rule[]`로 바꿉니다. 엔진은 골든 테스트용으로 rules-data를 devDependency로 둡니다.
 - **mobile-web:** 기본 경로(`/`)는 입력 위저드(`screens/wizard/`: 답 모델 `answers.ts` → `toProfile()` → 엔진), `/#/dev`는 개발용 판정 화면입니다. 결과 카드는 `components/ResultCard.tsx` 하나를 같이 씁니다. 답은 `answersStore.ts`가 `src/platform/storage.ts`를 통해 기기에만 저장합니다(D-22). 규칙은 `src/data/useRuleSet.ts` 훅으로 받고, 이 훅은 `src/data/factory.ts`로 데이터 출처를 고릅니다(static 기본, api는 빈 자리 + `withFallback`). `/config.json`은 vite `publicDir: ../../public-config`에서 서빙합니다. `screens/playground/`는 개발용 판정 화면이고, 프리셋 결과는 `test/playground.test.ts`가 골든 기대값과 대조합니다.

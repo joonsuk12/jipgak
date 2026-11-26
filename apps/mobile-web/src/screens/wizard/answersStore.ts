@@ -1,6 +1,7 @@
 import type { KeyValueStorage } from '../../platform/storage';
 import { type Answers, emptyAnswers, type HomeAnswers } from './answers';
 import { ASSET_ITEMS, type AssetItemValues } from './assetItems';
+import { ALL_ZONE_IDS, SIDOS } from './zones';
 
 /**
  * 위저드 답을 기기에만 저장합니다(D-22). 서버·로그·분석으로는 보내지 않습니다.
@@ -51,6 +52,8 @@ function restoreHome(raw: unknown, empty: HomeAnswers): HomeAnswers {
   const r = asRecord(raw);
   return {
     region: pick(r, 'region', oneOf('metro', 'local', 'unknown'), empty.region),
+    sido: pick(r, 'sido', oneOf(...SIDOS.map((x) => x.id), 'unknown'), empty.sido),
+    zone: pick(r, 'zone', oneOf(...ALL_ZONE_IDS, 'unknown'), empty.zone),
     regulated: pick(r, 'regulated', isYesNo, empty.regulated),
     amount: pick(r, 'amount', isAmount, empty.amount),
     area: pick(r, 'area', isAmount, empty.area),

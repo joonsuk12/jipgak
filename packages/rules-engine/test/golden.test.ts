@@ -41,7 +41,12 @@ function base(): UserProfile {
       hasJeonseLoan: false,
       livesInPublicRental: false,
     },
-    purchase: { region: METRO, price: man(50_000), areaM2: 84, contractSigned: true },
+    purchase: {
+      region: { metro: true, zone: 'seoul' },
+      price: man(50_000),
+      areaM2: 84,
+      contractSigned: true,
+    },
     jeonse: { region: METRO, deposit: man(30_000), areaM2: 59, contractSigned: true },
   };
 }
@@ -83,12 +88,12 @@ interface Case {
 const p01 = base();
 
 const purchaseCases: Case[] = [
-  { id: 'P01', profile: p01, status: 'eligible', limit: 32_000 },
+  { id: 'P01', profile: p01, status: 'eligible', limit: 29_500 },
   {
     id: 'P02',
     profile: withIncome(p01, 5_500, 3_500),
     status: 'eligible',
-    limit: 32_000,
+    limit: 29_500,
     note: '1인 소득 기준 적용, 금리 +0.3%p',
   },
   { id: 'P03', profile: withIncome(p01, 6_500, 2_500), status: 'ineligible' },
@@ -97,7 +102,7 @@ const purchaseCases: Case[] = [
     id: 'P05',
     profile: { ...p01, marriage: { status: 'planned', date: '2027-01-20' } },
     status: 'eligible',
-    limit: 32_000,
+    limit: 29_500,
   },
   {
     id: 'P06',
@@ -118,10 +123,15 @@ const purchaseCases: Case[] = [
     id: 'P09',
     profile: {
       ...withIncome(p01, 1_800, 1_200),
-      purchase: { region: LOCAL, price: man(30_000), areaM2: 84, contractSigned: true },
+      purchase: {
+        region: { ...LOCAL, zone: 'other' },
+        price: man(30_000),
+        areaM2: 84,
+        contractSigned: true,
+      },
     },
     status: 'eligible',
-    limit: 24_000,
+    limit: 21_500,
   },
   {
     id: 'P10',
@@ -132,7 +142,7 @@ const purchaseCases: Case[] = [
     id: 'P11',
     profile: withoutNetAssets(p01),
     status: 'needs_check',
-    limit: 32_000,
+    limit: 29_500,
   },
   {
     id: 'P12',
@@ -143,7 +153,7 @@ const purchaseCases: Case[] = [
     id: 'P13',
     profile: { ...p01, purchase: { ...p01.purchase!, contractSigned: false } },
     status: 'eligible',
-    limit: 32_000,
+    limit: 29_500,
     note: '주택매매계약을 체결해야 신청할 수 있습니다. 계약 전이라면 계약 후 수탁은행에 신청하세요.',
   },
   {
@@ -155,16 +165,40 @@ const purchaseCases: Case[] = [
     id: 'P15',
     profile: {
       ...withIncome(p01, 1_800, 1_200),
-      purchase: { region: { metro: false }, price: man(30_000), areaM2: 84, contractSigned: true },
+      purchase: {
+        region: { metro: false, zone: 'other' },
+        price: man(30_000),
+        areaM2: 84,
+        contractSigned: true,
+      },
     },
     status: 'eligible',
-    limit: 24_000,
+    limit: 21_500,
     note: '규제지역 여부를 몰라 LTV 80%로 계산했습니다. 규제지역이면 LTV 70%가 적용되어 예상 한도가 줄어듭니다.',
   },
   {
     id: 'P16',
     profile: { ...p01, purchase: { ...p01.purchase!, region: {} } },
     status: 'eligible',
+  },
+  {
+    id: 'P17',
+    profile: {
+      ...p01,
+      purchase: { ...p01.purchase!, region: { metro: true, zone: 'gyeonggi-2800' } },
+    },
+    status: 'eligible',
+    limit: 32_000,
+  },
+  {
+    id: 'P18',
+    profile: {
+      ...p01,
+      purchase: { ...p01.purchase!, region: { metro: true }, price: man(40_000) },
+    },
+    status: 'eligible',
+    limit: 22_500,
+    note: '세부 지역(시·군)을 몰라 소액임차보증금을 가장 큰 금액(5,500만 원)으로 빼고 계산했습니다. 지역을 고르면 한도가 정확해집니다.',
   },
 ];
 
@@ -247,7 +281,8 @@ function runCases(rule: Rule, cases: Case[]): void {
       (n) =>
         n.startsWith('1인 소득') ||
         n.includes('계약 전이라면') ||
-        n.includes('규제지역 여부를 몰라'),
+        n.includes('규제지역 여부를 몰라') ||
+        n.includes('세부 지역(시·군)을 몰라'),
     );
     expect(flagged).toEqual(note ? [note] : []);
   });

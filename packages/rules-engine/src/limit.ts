@@ -1,6 +1,18 @@
 import { type EvalContext, holds, readFact } from './conditions';
 import type { LimitSpec, RateQuote, RateSpec, Won } from './types';
 
+/** 금액표에서 fact 값(코드)에 맞는 금액. 모르면 표의 최댓값, 표에 없는 코드는 규칙 오류 */
+export function lookupAmount(name: string, ctx: EvalContext): Won {
+  const table = ctx.lookups[name];
+  if (!table) throw new Error(`정의되지 않은 금액표: ${name}`);
+  const key = readFact(ctx, table.fact);
+  if (key === null) return Math.max(...Object.values(table.values));
+  if (typeof key !== 'string' || !(key in table.values)) {
+    throw new Error(`금액표 ${name}에 없는 코드: ${String(key)}`);
+  }
+  return table.values[key] ?? 0;
+}
+
 /**
  * 예상 한도: cap마다 처음으로 when이 true인 선택지(금액 또는 fact × 비율)를 고르고,
  * 그중 가장 작은 값을 씁니다. 계산할 수 없는 cap이 있으면(입력 모름) undefined입니다.
@@ -18,6 +30,8 @@ export function computeLimit(spec: LimitSpec, ctx: EvalContext): Won | undefined
       if (typeof base !== 'number') return undefined;
       // 부동소수 오차(예: 5억 × 0.7)로 1원 모자라지 않도록 보정 후 내림
       amount = Math.floor(base * option.ratio + 1e-6);
+      if (option.minus !== undefined)
+        amount = Math.max(0, amount - lookupAmount(option.minus, ctx));
     }
     limit = limit === undefined ? amount : Math.min(limit, amount);
   }
