@@ -29,7 +29,8 @@ export const STEP_META: Record<StepId, { title: string; short: string }> = {
 const HINT = {
   plannedDate: '결혼 예정일 기준으로 판정해요. 대출 후 배우자가 함께 올라간 등본을 내야 해요.',
   fundPurchaseLoan: '다 갚은 대출도 포함해요. 받은 적이 있으면 생애최초가 아니에요.',
-  children: '금리 우대에만 쓰여요.',
+  subscription:
+    '본인이나 배우자 중 한 사람 기준이에요. 대출 접수일부터 6개월 안에 한꺼번에 낸 회차는 빼고 세요.',
 } as const;
 
 const YES_NO_HAVE = [
@@ -115,19 +116,6 @@ export function MarriageStep({ a, update }: StepProps) {
           )}
         </Question>
       )}
-      <Question label="자녀" hint={HINT.children}>
-        <ChoiceGroup
-          columns={2}
-          value={a.children}
-          onChange={(v) => update({ children: v })}
-          options={[
-            { value: '0', label: '없어요' },
-            { value: '1', label: '1명' },
-            { value: '2', label: '2명' },
-            { value: '3', label: '3명 이상' },
-          ]}
-        />
-      </Question>
     </Stack>
   );
 }
@@ -258,6 +246,24 @@ export function HistoryStep({ a, update }: StepProps) {
             options={[
               { value: 'yes', label: '살아요' },
               { value: 'no', label: '아니에요' },
+            ]}
+          />
+        </Question>
+      )}
+      {purchase && (
+        <Question
+          label="청약통장(주택청약종합저축)은 얼마나 넣었나요?"
+          term="subscription"
+          hint={HINT.subscription}
+        >
+          <ChoiceGroup
+            value={a.subscription}
+            onChange={(v) => update({ subscription: v })}
+            options={[
+              { value: 'none', label: '없거나 5년·60회 미만' },
+              { value: '5', label: '5년 이상, 60회 이상' },
+              { value: '10', label: '10년 이상, 120회 이상' },
+              { value: '15', label: '15년 이상, 180회 이상' },
             ]}
           />
         </Question>

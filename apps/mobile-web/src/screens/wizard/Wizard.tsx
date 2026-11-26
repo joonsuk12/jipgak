@@ -12,6 +12,7 @@ import {
   visibleSteps,
 } from './answers';
 import { clearWizard, hasAnyAnswer, loadWizard, saveWizard } from './answersStore';
+import { ApplyGuide, ResultIntro } from './ResultGuide';
 import {
   AssetsStep,
   HistoryStep,
@@ -112,6 +113,7 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
     jeonseHome: <JeonseHomeStep a={answers} update={update} />,
     result: (
       <div className="space-y-12">
+        <ResultIntro rules={results.map((r) => r.rule)} today={todayISO()} />
         <ResultSummary
           items={results.flatMap((r) => (r.result ? [{ rule: r.rule, result: r.result }] : []))}
         />
@@ -130,9 +132,7 @@ export function Wizard({ ruleSet }: { ruleSet: RuleSet }) {
             </p>
           ),
         )}
-        <p className="text-sm leading-6 text-ink-soft">
-          참고용 결과예요. 실제 자격과 한도는 기금 수탁은행 심사로 정해져요.
-        </p>
+        <ApplyGuide ruleIds={results.map((r) => r.rule.id)} />
       </div>
     ),
   }[stepId];

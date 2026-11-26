@@ -1,5 +1,5 @@
 import type { Check, Result, Rule, Status } from '@jipgak/rules-engine';
-import { formatWon } from '../format';
+import { formatDateKo, formatWon } from '../format';
 import { Help } from './Help';
 
 /** 판정 도장. 가능 = 초록 실선, 확인 필요 = 점선("모름"과 같은 표시), 불가 = 빨강 */
@@ -29,7 +29,8 @@ function rateText(range: NonNullable<Result['rateRange']>): string {
 /** 금리표 열이 대출기간이면 범위가 기간 때문에 생긴다는 설명 (REVIEW 1-4, D-21) */
 function rateCaption(rule: Rule): string {
   const columns = rule.rate?.table.columns;
-  const base = '자녀 우대를 반영한 금리예요. 금리 방식(고정·변동)에 따라 조금 더 붙을 수 있어요.';
+  const base =
+    '고른 우대(청약저축 등)를 반영한 금리예요. 금리 방식(고정·변동)에 따라 조금 더 붙을 수 있어요.';
   if (columns?.kind !== 'term') return base;
   const years = columns.years;
   return `대출기간 ${Math.min(...years)}~${Math.max(...years)}년에 따라 달라요. ${base}`;
@@ -89,6 +90,27 @@ export function ResultCard({
         <StatusStamp status={result.status} />
       </header>
 
+      {result.timing.length > 0 && (
+        <ul className="space-y-2">
+          {result.timing.map((t) => (
+            <li
+              key={t.conditionId}
+              className={`border-l-4 py-1 pl-3 ${t.kind === 'expires' ? 'border-amber' : 'border-pine'}`}
+            >
+              <p className="font-serif text-lg leading-7 font-bold">
+                {formatDateKo(t.date)}
+                {t.kind === 'expires' ? '까지 접수해야 해요' : '부터 신청할 수 있어요'}
+              </p>
+              <p className="text-sm leading-6 text-ink-soft">
+                {t.kind === 'expires'
+                  ? `그다음 날부터 '${t.label}' 기준에 맞지 않아요. 판정은 대출 접수일 기준이에요.`
+                  : `그날부터 '${t.label}' 기준에 맞아요. 그 전에 접수하면 대상이 아니에요.`}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+
       {(result.estimatedLimit !== undefined || result.rateRange) && (
         <div className="space-y-2">
           <dl className="grid grid-cols-2 gap-4">
@@ -109,6 +131,21 @@ export function ResultCard({
             term="estimate"
             hint={result.rateRange ? rateCaption(rule) : '입력값으로 계산한 추정치예요.'}
           />
+          {result.dti &&
+            result.estimatedLimit !== undefined &&
+            result.dti.maxLoan < result.estimatedLimit && (
+              <div role="status" className="space-y-1 bg-amber-soft px-3 py-2 text-ink">
+                <p className="text-[15px] leading-6 font-semibold">
+                  DTI 기준으로는 약 {formatWon(result.dti.maxLoan)}까지예요
+                </p>
+                <p className="text-sm leading-6 text-ink-soft">
+                  1년에 갚는 원리금이 연소득({result.dti.singleIncome ? '신청인 1인' : '부부 합산'}{' '}
+                  {formatWon(result.dti.income)})의 {Math.round(result.dti.maxRatio * 100)}%를 넘지
+                  않는 금액이에요. 기존 대출이 없고 {result.dti.termYears}년 동안 매달 같은
+                  금액(원리금균등)으로 갚는다고 보고 계산했어요.
+                </p>
+              </div>
+            )}
         </div>
       )}
 
@@ -212,7 +249,11 @@ export function ResultSummary({ items }: { items: { rule: Rule; result: Result }
               <span className="block text-[15px] font-semibold">{rule.name}</span>
               <span className="block text-sm tabular-nums text-ink-soft">
                 {result.estimatedLimit !== undefined
-                  ? `예상 한도 ${formatWon(result.estimatedLimit)}`
+                  ? `예상 한도 ${formatWon(result.estimatedLimit)}${
+                      result.dti && result.dti.maxLoan < result.estimatedLimit
+                        ? `, DTI 기준 약 ${formatWon(result.dti.maxLoan)}`
+                        : ''
+                    }`
                   : result.status === 'ineligible'
                     ? '조건이 맞지 않아요'
                     : '지역과 금액을 입력하면 한도를 계산해요'}

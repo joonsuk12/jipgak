@@ -43,6 +43,12 @@ export function m2ToPyeong(m2: number): number {
   return Math.round((m2 / M2_PER_PYEONG) * 10) / 10;
 }
 
+/** 'YYYY-MM-DD' → '2026년 12월 1일' */
+export function formatDateKo(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  return `${y}년 ${m}월 ${d}일`;
+}
+
 /** 오늘 날짜 'YYYY-MM-DD' (기기 시간대 기준). 엔진 밖인 화면에서만 씁니다. */
 export function todayISO(now: Date = new Date()): string {
   const pad = (n: number) => String(n).padStart(2, '0');

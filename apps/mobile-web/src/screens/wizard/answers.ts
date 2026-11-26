@@ -1,4 +1,5 @@
-import type { UserProfile } from '@jipgak/rules-engine';
+import { parseDuration, shiftDate, type UserProfile } from '@jipgak/rules-engine';
+import { todayISO } from '../../format';
 import { type AssetItemValues, emptyAssetItems } from './assetItems';
 import type { SidoId, ZoneId } from './zones';
 
@@ -43,6 +44,8 @@ export interface Answers {
   allHomeless: YesNo;
   everOwnedHome: YesNo;
   everHadFundPurchaseLoan: YesNo;
+  /** 구입만: 청약통장 가입 기간·납입 회차 구간 (금리 우대) */
+  subscription: Choice<'none' | '5' | '10' | '15'>;
   hasFundLoan: YesNo;
   hasMortgageLoan: YesNo;
   hasJeonseLoan: YesNo;
@@ -75,6 +78,7 @@ export function emptyAnswers(): Answers {
     allHomeless: null,
     everOwnedHome: null,
     everHadFundPurchaseLoan: null,
+    subscription: null,
     hasFundLoan: null,
     hasMortgageLoan: null,
     hasJeonseLoan: null,
@@ -147,7 +151,16 @@ function region(home: HomeAnswers, withRegulated: boolean) {
 }
 
 /** 위저드 답 → 엔진 입력. 고르지 않은 항목과 '모름'은 입력하지 않은 것으로 넘깁니다. */
-export function toProfile(a: Answers): UserProfile {
+/** 청약통장 구간 → 엔진 입력(가입일, 납입 회차). 구간의 최솟값으로 넘깁니다. */
+function subscription(a: Answers, asOf: string) {
+  if (!wantsPurchase(a)) return undefined;
+  const years =
+    a.subscription === '5' ? 5 : a.subscription === '10' ? 10 : a.subscription === '15' ? 15 : 0;
+  if (years === 0) return undefined;
+  return { joinedAt: shiftDate(asOf, parseDuration(`P${years}Y`), -1), paymentCount: years * 12 };
+}
+
+export function toProfile(a: Answers, asOf: string = todayISO()): UserProfile {
   const childCount = a.children === null || a.children === 'unknown' ? 0 : Number(a.children);
   const purchase = wantsPurchase(a)
     ? compact({
@@ -185,6 +198,7 @@ export function toProfile(a: Answers): UserProfile {
     }),
     // 자녀는 금리 우대에만 쓰이며 출생일은 판정에 쓰지 않습니다.
     children: Array.from({ length: childCount }, () => ({ birthDate: '2020-01-01' })),
+    subscription: subscription(a, asOf),
     purchase,
     jeonse,
   });

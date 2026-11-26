@@ -86,6 +86,12 @@ export function restoreAnswers(raw: unknown): Answers | null {
     allHomeless: pick(r, 'allHomeless', isYesNo, e.allHomeless),
     everOwnedHome: pick(r, 'everOwnedHome', isYesNo, e.everOwnedHome),
     everHadFundPurchaseLoan: pick(r, 'everHadFundPurchaseLoan', isYesNo, e.everHadFundPurchaseLoan),
+    subscription: pick(
+      r,
+      'subscription',
+      oneOf('none', '5', '10', '15', 'unknown'),
+      e.subscription,
+    ),
     hasFundLoan: pick(r, 'hasFundLoan', isYesNo, e.hasFundLoan),
     hasMortgageLoan: pick(r, 'hasMortgageLoan', isYesNo, e.hasMortgageLoan),
     hasJeonseLoan: pick(r, 'hasJeonseLoan', isYesNo, e.hasJeonseLoan),

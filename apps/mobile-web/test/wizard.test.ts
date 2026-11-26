@@ -1,7 +1,15 @@
 import { products } from '@jipgak/rules-data';
 import { evaluate, type Rule } from '@jipgak/rules-engine';
 import { describe, expect, it } from 'vitest';
-import { decimalOnly, formatManWon, m2ToPyeong, pyeongToM2, todayISO } from '../src/format';
+import {
+  decimalOnly,
+  formatDateKo,
+  formatManWon,
+  m2ToPyeong,
+  pyeongToM2,
+  todayISO,
+} from '../src/format';
+import { isStale } from '../src/screens/wizard/ResultGuide';
 import { describePyeongType } from '../src/screens/wizard/areaTypes';
 import { HOUSEHOLD_AREA } from '../src/screens/wizard/householdArea';
 import { ALL_ZONE_IDS } from '../src/screens/wizard/zones';
@@ -156,6 +164,42 @@ describe('세부 지역 코드', () => {
       metro: true,
       zone: 'gyeonggi-2800',
     });
+  });
+});
+
+describe('청약저축 구간', () => {
+  it('10년·120회 구간이면 구입자금 금리 우대 0.4%p가 반영된다', () => {
+    const a = p01();
+    const base = run(a).purchase.rateRange;
+    const withSub = evaluate(
+      rule('loan-newlywed-purchase'),
+      toProfile({ ...a, subscription: '10' }, asOf),
+      {
+        asOf,
+      },
+    ).rateRange;
+    expect(base).toEqual({ min: 3.25, max: 3.5 });
+    expect(withSub).toEqual({ min: 2.85, max: 3.1 });
+  });
+  it('구간 → 가입일·납입 회차, 없음·모름이면 넘기지 않는다', () => {
+    const a = p01();
+    expect(toProfile({ ...a, subscription: '5' }, asOf).subscription).toEqual({
+      joinedAt: '2021-11-17',
+      paymentCount: 60,
+    });
+    expect(toProfile({ ...a, subscription: 'none' }, asOf).subscription).toBeUndefined();
+    expect(toProfile({ ...a, subscription: 'unknown' }, asOf).subscription).toBeUndefined();
+  });
+});
+
+describe('결과 안내', () => {
+  it('출처 확인일부터 4개월이 지나면 오래된 기준', () => {
+    const r = rule('loan-newlywed-purchase');
+    expect(isStale(r, '2027-03-17')).toBe(false);
+    expect(isStale(r, '2027-03-18')).toBe(true);
+  });
+  it('날짜를 한국어로', () => {
+    expect(formatDateKo('2026-12-01')).toBe('2026년 12월 1일');
   });
 });
 
