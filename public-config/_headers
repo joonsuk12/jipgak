@@ -1,0 +1,7 @@
+# Cloudflare Pages 응답 헤더 (D-30). 빌드 시 dist/ 루트로 복사됩니다.
+# CSP: 스크립트·글꼴·요청을 같은 출처로만 허용해(작은 글꼴 조각은 빌드가 data: 로 넣음), 코드가 바뀌어도 입력값이 밖으로 나갈 수 없게 막습니다.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self' data:; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()

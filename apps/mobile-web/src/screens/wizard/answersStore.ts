@@ -78,7 +78,6 @@ export function restoreAnswers(raw: unknown): Answers | null {
     purpose: pick(r, 'purpose', oneOf('purchase', 'jeonse', 'both'), e.purpose),
     marriageStatus: pick(r, 'marriageStatus', oneOf('married', 'planned'), e.marriageStatus),
     marriageDate: pick(r, 'marriageDate', isDate, e.marriageDate),
-    children: pick(r, 'children', oneOf('0', '1', '2', '3', 'unknown'), e.children),
     applicantIncome: pick(r, 'applicantIncome', isAmount, e.applicantIncome),
     spouseIncome: pick(r, 'spouseIncome', isAmount, e.spouseIncome),
     netAssets: pick(r, 'netAssets', isAmount, e.netAssets),

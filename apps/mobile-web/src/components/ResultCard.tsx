@@ -29,8 +29,11 @@ function rateText(range: NonNullable<Result['rateRange']>): string {
 /** 금리표 열이 대출기간이면 범위가 기간 때문에 생긴다는 설명 (REVIEW 1-4, D-21) */
 function rateCaption(rule: Rule): string {
   const columns = rule.rate?.table.columns;
-  const base =
-    '고른 우대(청약저축 등)를 반영한 금리예요. 금리 방식(고정·변동)에 따라 조금 더 붙을 수 있어요.';
+  const base = `${
+    rule.rate?.discounts.some((d) => d.id === 'subscription')
+      ? '고른 우대(청약저축 등)를'
+      : '입력한 조건을'
+  } 반영한 금리예요. 금리 방식(고정·변동)에 따라 조금 더 붙을 수 있어요.`;
   if (columns?.kind !== 'term') return base;
   const years = columns.years;
   return `대출기간 ${Math.min(...years)}~${Math.max(...years)}년에 따라 달라요. ${base}`;
@@ -142,7 +145,8 @@ export function ResultCard({
                   1년에 갚는 원리금이 연소득({result.dti.singleIncome ? '신청인 1인' : '부부 합산'}{' '}
                   {formatWon(result.dti.income)})의 {Math.round(result.dti.maxRatio * 100)}%를 넘지
                   않는 금액이에요. 기존 대출이 없고 {result.dti.termYears}년 동안 매달 같은
-                  금액(원리금균등)으로 갚는다고 보고 계산했어요.
+                  금액(원리금균등)으로 갚는다고 보고 계산했어요. 기존 대출이 있으면 은행이 그
+                  상환액까지 넣어 다시 계산해요.
                 </p>
               </div>
             )}

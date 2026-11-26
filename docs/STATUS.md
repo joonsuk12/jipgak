@@ -26,7 +26,8 @@
 2. [x] **규칙 보강 (2026-11-26):** 소액임차보증금 공제(D-27), 기한이익상실 이력 안내(두 상품 manualChecks), 접수일 기준 날짜 안내 `Result.timing`·DTI 간이 계산 `Result.dti`(D-28, 골든 P19·P20 및 DTI 3건). 화면 표시는 3단계
 3. [x] **화면 (2026-11-26):** 결과 카드에 접수일 날짜 안내(제목 아래, expires=amber·opens=pine)와 DTI 경고(한도 밑, 요약 줄에도 표시), 결과 맨 위에 "1차 판정" 문구와 기준 오래됨 경고(확인일 + 4개월), 맨 아래 "신청하려면"(계약 → 기한 → 기금e든든·수탁은행 → 제출서류 링크, 공식 마법사 링크, 상담 1566-9009, 특수 대상 안내). 위저드: 자녀 질문 제거(엔진 기능 유지), 구입자금 청약통장 구간 질문, 소득 "자세히"에 사회초년생 기준. 코드 `components/ResultCard.tsx`, `screens/wizard/ResultGuide.tsx`
 4. [x] **출시 필수 (2026-11-26):** 글꼴을 Fontsource npm 패키지로 앱에 포함하고 Google Fonts 링크 삭제(브라우저 요청이 localhost 한 곳뿐임을 확인). 개인정보 처리방침 `/#/privacy`(`screens/PrivacyPolicy.tsx`: 수집 없음, 기기 저장 키와 지우는 법, 호스팅 접속 기록, 외부 링크, 제3자 제공 없음, 시행일 2026-11-26). 면책 문구: 첫 화면(참고용 1차 판정 + 처리방침 링크), 결과 맨 아래(오류 가능·손해 불책임·원문 확인 + 처리방침 링크). 문의처는 사용자가 정할 때까지 처리방침에서 숨김(D-29)
-5. [ ] **점검:** `/code-review`, `/security-review`(입력값 무전송), TEST-CASES 갱신
+5. [x] **점검 (2026-11-26):** 9009269 이후 변경분 코드 리뷰(코드 규칙·요구사항 두 갈래)와 보안 점검. 고친 것: 자녀 질문을 없앤 뒤에도 예전에 저장한 자녀 수가 금리 우대에 들어가던 버그(복원·엔진 전달 제거), 같은 정의를 여러 곳에서 참조하면 날짜 안내가 겹치던 문제, DTI 경고에 "기존 대출이 있으면 은행이 다시 계산" 추가, 전세 결과 금리 설명에서 "청약저축" 제거, "신청하려면" 1단계를 구입·전세·둘 다에 맞게, 상담 전화 이름 "주택도시기금 콜센터", 청약 힌트 오타, sources/newlywed-purchase.md DTI 설명 갱신. 보안: 화면의 외부 요청은 `/config.json` 읽기뿐(입력값 없음), 비밀값·개인 연락처 없음, Cloudflare Pages 보안 헤더 `public-config/_headers` 추가(CSP로 같은 출처만 허용, D-30. 빌드 결과에 헤더를 붙여 띄워서 화면·글꼴 정상 확인). 테스트 136개
+   - 보류(판단 지적, 출시 후 정리): 신청 기한 문구가 규칙 `manualChecks`와 `ResultGuide.tsx`에 중복, 상품별 화면 안내를 rule id로 찾음(상품이 늘면 규칙 데이터로 옮김), `Lookup.whenUnknown`을 엔진이 읽지 않음(값이 'max' 하나뿐), Playground가 `wizard/zones`를 가져다 씀, `region(home, withRegulated)` 인자 이름
 6. [ ] **배포:** GitHub 비공개 레포 생성·push(`gh repo create jipgak --private --source . --remote origin --push`, 사용자 확인 후), CI 확인, Cloudflare Pages `*.pages.dev`에 올려 운영자 부부가 먼저 사용
 
 ## 다음 할 일 (v1, 위에서부터 순서대로)
@@ -45,7 +46,7 @@
 10. [ ] Cloudflare Pages 배포(`*.pages.dev`), 면책 문구, 개인정보 처리방침, 분석(입력값 제외)
 
 ## 다음 세션 메모
-- **다음 세션 시작점 (2026-11-26):** 출시 전 작업 1~4단계 완료(테스트 134개). 다음은 5단계 점검(`/code-review`, `/security-review`), 그다음 6단계 GitHub·배포
+- **다음 세션 시작점 (2026-11-26):** 출시 전 작업 1~5단계 완료(테스트 136개). 다음은 6단계: GitHub 비공개 레포 생성·push(사용자 확인 후), CI 확인, Cloudflare Pages 배포
 - 사용자: GitHub 비공개 레포 생성 후 알려 주면 push·CI 첫 실행을 함께 확인
 - 다음 출처 재검증 예정: 2027-02 (분기, D-17). 2027년도 순자산 기준은 통계청 발표 후 바뀜
 - pnpm은 `corepack enable pnpm --install-directory "$APPDATA/npm"`로 설치함 (Program Files 쓰기 권한 없음). pnpm 12.21.0

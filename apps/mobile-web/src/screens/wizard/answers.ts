@@ -35,7 +35,6 @@ export interface Answers {
   purpose: Purpose | null;
   marriageStatus: 'married' | 'planned' | null;
   marriageDate: string | null;
-  children: Choice<'0' | '1' | '2' | '3'>;
   applicantIncome: Amount;
   spouseIncome: Amount;
   netAssets: Amount;
@@ -70,7 +69,6 @@ export function emptyAnswers(): Answers {
     purpose: null,
     marriageStatus: null,
     marriageDate: '',
-    children: null,
     applicantIncome: '',
     spouseIncome: '',
     netAssets: '',
@@ -150,7 +148,6 @@ function region(home: HomeAnswers, withRegulated: boolean) {
   });
 }
 
-/** 위저드 답 → 엔진 입력. 고르지 않은 항목과 '모름'은 입력하지 않은 것으로 넘깁니다. */
 /** 청약통장 구간 → 엔진 입력(가입일, 납입 회차). 구간의 최솟값으로 넘깁니다. */
 function subscription(a: Answers, asOf: string) {
   if (!wantsPurchase(a)) return undefined;
@@ -160,8 +157,8 @@ function subscription(a: Answers, asOf: string) {
   return { joinedAt: shiftDate(asOf, parseDuration(`P${years}Y`), -1), paymentCount: years * 12 };
 }
 
+/** 위저드 답 → 엔진 입력. 고르지 않은 항목과 '모름'은 입력하지 않은 것으로 넘깁니다. */
 export function toProfile(a: Answers, asOf: string = todayISO()): UserProfile {
-  const childCount = a.children === null || a.children === 'unknown' ? 0 : Number(a.children);
   const purchase = wantsPurchase(a)
     ? compact({
         region: region(a.purchase, true),
@@ -196,8 +193,8 @@ export function toProfile(a: Answers, asOf: string = todayISO()): UserProfile {
       hasJeonseLoan: bool(a.hasJeonseLoan),
       livesInPublicRental: bool(a.livesInPublicRental),
     }),
-    // 자녀는 금리 우대에만 쓰이며 출생일은 판정에 쓰지 않습니다.
-    children: Array.from({ length: childCount }, () => ({ birthDate: '2020-01-01' })),
+    // 대상은 자녀 없는 부부라 자녀를 묻지 않습니다(D-26 ⑤). 엔진의 자녀 우대 기능은 남겨 둡니다.
+    children: [],
     subscription: subscription(a, asOf),
     purchase,
     jeonse,

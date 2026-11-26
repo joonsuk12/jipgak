@@ -33,7 +33,6 @@ function p01(): Answers {
     purpose: 'both',
     marriageStatus: 'married',
     marriageDate: '2023-05-01',
-    children: '0',
     applicantIncome: '3500',
     spouseIncome: '2500',
     netAssets: '30000',

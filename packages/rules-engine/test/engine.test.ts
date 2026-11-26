@@ -7,6 +7,7 @@ import {
   parseDuration,
   shiftDate,
   evaluate,
+  collectTiming,
 } from '../src';
 import type { ConditionNode, Facts, Rule } from '../src';
 
@@ -84,5 +85,34 @@ describe('안내 문구', () => {
     );
     expect(result.status).toBe('ineligible');
     expect(result.notes).toEqual([]);
+  });
+});
+
+describe('접수일 날짜 안내', () => {
+  it('같은 정의를 두 곳에서 참조해도 안내는 한 번만 낸다', () => {
+    const newlywed: ConditionNode = {
+      all: [
+        { id: 'married', label: '기혼', fact: 'marriage.status', op: '==', value: 'married' },
+        {
+          id: 'within7',
+          label: '혼인 7년 이내',
+          fact: 'marriage.date',
+          op: 'withinPast',
+          value: 'P7Y',
+        },
+      ],
+    };
+    const facts = {
+      'marriage.status': 'married',
+      'marriage.date': '2019-12-01',
+    } as unknown as Facts;
+    const notes = collectTiming(
+      { all: [{ ref: 'newlywed' }, { any: [{ ref: 'newlywed' }] }] },
+      { facts, asOf: '2026-11-17', definitions: { newlywed }, lookups: {} },
+      'P3M',
+    );
+    expect(notes).toEqual([
+      { kind: 'expires', conditionId: 'within7', label: '혼인 7년 이내', date: '2026-12-01' },
+    ]);
   });
 });

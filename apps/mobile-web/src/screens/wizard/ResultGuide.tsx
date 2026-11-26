@@ -66,9 +66,15 @@ export function ApplyGuide({ ruleIds }: { ruleIds: string[] }) {
         <li className="flex gap-3">
           <span className="font-serif font-bold text-pine">1</span>
           <span>
-            {ruleIds.includes('loan-newlywed-jeonse')
-              ? '집을 정하고 계약해요. 전세는 보증금의 5% 이상을 내야 신청할 수 있어요.'
-              : '집을 정하고 매매계약을 해요.'}
+            {`집을 정하고 ${
+              ruleIds.includes('loan-newlywed-purchase')
+                ? ruleIds.includes('loan-newlywed-jeonse')
+                  ? '매매계약이나 임대차계약을'
+                  : '매매계약을'
+                : '임대차계약을'
+            } 해요.`}
+            {ruleIds.includes('loan-newlywed-jeonse') &&
+              ' 전세는 보증금의 5% 이상을 내야 신청할 수 있어요.'}
           </span>
         </li>
         <li className="flex gap-3">
@@ -123,7 +129,7 @@ export function ApplyGuide({ ruleIds }: { ruleIds: string[] }) {
           </a>
         ))}
         <p className="text-ink-soft">
-          대출 심사 상담: 주택도시보증공사 콜센터{' '}
+          대출 심사 상담: 주택도시기금 콜센터{' '}
           <a className={link} href="tel:1566-9009">
             1566-9009
           </a>{' '}

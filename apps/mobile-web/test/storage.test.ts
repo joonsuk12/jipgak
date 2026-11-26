@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MemoryStorage, WebStorage } from '../src/platform/storage';
-import { emptyAnswers } from '../src/screens/wizard/answers';
+import { emptyAnswers, toProfile } from '../src/screens/wizard/answers';
 import {
   ANSWERS_KEY,
   clearWizard,
@@ -66,6 +66,12 @@ describe('입력값 기기 저장', () => {
     expect(a?.purchase.amount).toBe('50000');
     expect(a?.assetItems).toEqual(emptyAnswers().assetItems);
     expect(a?.jeonse).toEqual(emptyAnswers().jeonse);
+  });
+
+  it('예전에 저장한 자녀 수는 버리고 엔진에도 넘기지 않는다 (자녀 질문 제거, D-26 ⑤)', () => {
+    const a = restoreAnswers({ purpose: 'purchase', children: '2' });
+    expect(a).not.toHaveProperty('children');
+    expect(toProfile(a!, '2026-11-26').children).toEqual([]);
   });
 
   it('소수점 면적도 저장·복원한다', () => {

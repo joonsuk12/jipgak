@@ -41,7 +41,14 @@ export function collectTiming(root: ConditionNode, ctx: EvalContext, within: str
   };
 
   visit(root, 0);
-  return notes;
+  // 같은 정의(ref)를 여러 곳에서 쓰면 같은 안내가 겹치므로 하나만 남깁니다.
+  const seen = new Set<string>();
+  return notes.filter((n) => {
+    const key = `${n.kind}:${n.conditionId}:${n.date}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function isDateCondition(node: ConditionNode): node is DateCondition {
