@@ -36,7 +36,7 @@
 
 ## 다음 할 일 (v1, 위에서부터 순서대로)
 1. [x] 사용자 검토 반영: A 항목(D-15), B 항목(D-19) 완료. 남은 C 항목은 화면 작업하며 처리
-2. [ ] GitHub 원격 레포 push 후 CI 첫 실행 확인 (로컬에서는 같은 명령이 모두 통과, Actions에서는 아직 실행 전)
+2. [x] GitHub 원격 레포 push 후 CI 첫 실행 확인 (2026-11-26 통과)
 3. [ ] `rules-data/build.ts`: 규칙 번들 `rules-<version>.json` + `manifest.json`(버전, 해시) 생성, `StaticRulesSource`에 manifest 확인·로컬 캐시 추가
 4. [x] 화면: 목적 선택 → 입력 위저드("모름" 허용) → 결과 목록 → 상세(조건별 체크리스트, 근거 링크, 예상 한도·금리 범위)
    - [x] 입력 위저드 (2026-11-23): `src/screens/wizard/`. 목적 → 혼인·자녀 → 소득 → 순자산 → 이력 → 살 집/전세 집 → 결과. 답 모델 `answers.ts`(+`test/wizard.test.ts`), 결과는 `components/ResultCard.tsx`(테스트 화면과 공유)
