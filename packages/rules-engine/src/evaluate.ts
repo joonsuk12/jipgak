@@ -1,6 +1,7 @@
 import { type EvalContext, evaluateNode, holds, isCondition, readFact } from './conditions';
 import { computeFacts } from './facts';
-import { computeLimit, computeRateRange } from './limit';
+import { computeDti, computeLimit, computeRateRange } from './limit';
+import { collectTiming } from './timing';
 import type {
   Check,
   ConditionNode,
@@ -68,6 +69,7 @@ export function evaluate(rule: Rule, profile: UserProfile, options: EvalOptions)
     checks,
     notes,
     manualChecks: [...rule.manualChecks],
+    timing: collectTiming(root, ctx, options.timingWithin ?? 'P3M'),
   };
 
   if (status !== 'ineligible') {
@@ -75,6 +77,8 @@ export function evaluate(rule: Rule, profile: UserProfile, options: EvalOptions)
     if (limit !== undefined) result.estimatedLimit = limit;
     const rateRange = rule.rate ? computeRateRange(rule.rate, ctx) : undefined;
     if (rateRange !== undefined) result.rateRange = rateRange;
+    const dti = rule.dti ? computeDti(rule.dti, rule.rate, ctx) : undefined;
+    if (dti !== undefined) result.dti = dti;
   }
   return result;
 }

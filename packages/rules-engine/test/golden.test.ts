@@ -302,6 +302,83 @@ describe('골든: 구입자금 (loan-newlywed-purchase)', () => {
   });
 });
 
+describe('골든: 구입자금 DTI 간이 계산 (기존 대출 없음, 30년 원리금균등)', () => {
+  const dtiCases = [
+    // 기대값은 엔진과 별도로 계산(파이썬, 같은 원리금균등 공식): floor(소득 × 0.6 ÷ 연간 상환액/원)
+    { id: 'P01', profile: p01, maxLoan: 668_084_954, rate: 3.5, single: false },
+    {
+      id: 'P02',
+      profile: withIncome(p01, 5_500, 3_500),
+      maxLoan: 565_723_349,
+      rate: 4.15,
+      single: true,
+    },
+    {
+      id: 'P20',
+      profile: {
+        ...withIncome(p01, 1_000, 500),
+        purchase: {
+          region: { ...LOCAL, zone: 'other' },
+          price: man(30_000),
+          areaM2: 84,
+          contractSigned: true,
+        },
+      },
+      maxLoan: 187_340_895,
+      rate: 2.6,
+      single: false,
+    },
+  ];
+  it.each(dtiCases)('$id → DTI 최대 $maxLoan원', ({ profile, maxLoan, rate, single }) => {
+    const result = evaluate(purchaseRule, profile, { asOf });
+    expect(result.dti?.maxLoan).toBe(maxLoan);
+    expect(result.dti?.rate).toBe(rate);
+    expect(result.dti?.singleIncome).toBe(single);
+  });
+  it('P20: DTI 최대(1.87억)가 담보 기준 한도(2.15억)보다 작다', () => {
+    const p20 = dtiCases.find((c) => c.id === 'P20')!.profile;
+    const result = evaluate(purchaseRule, p20, { asOf });
+    expect(result.estimatedLimit).toBe(man(21_500));
+    expect(result.dti!.maxLoan).toBeLessThan(result.estimatedLimit!);
+  });
+});
+
+describe('골든: 접수일 기준 날짜 안내 (timing)', () => {
+  it('P06: 결혼 예정 2027-04-30 → 2027-01-30부터 신청 가능', () => {
+    const profile = { ...p01, marriage: { status: 'planned' as const, date: '2027-04-30' } };
+    const result = evaluate(purchaseRule, profile, { asOf });
+    expect(result.status).toBe('ineligible');
+    expect(result.timing).toEqual([
+      {
+        kind: 'opens',
+        conditionId: 'weddingWithin3m',
+        label: '3개월 이내 결혼 예정',
+        date: '2027-01-30',
+      },
+    ]);
+  });
+  it('P19: 혼인신고 2019-12-01 → 2026-12-01까지 접수해야 함 (3개월 안에 7년 끝남)', () => {
+    const profile = { ...p01, marriage: { status: 'married' as const, date: '2019-12-01' } };
+    const result = evaluate(purchaseRule, profile, { asOf });
+    expect(result.status).toBe('eligible');
+    expect(result.estimatedLimit).toBe(man(29_500));
+    expect(result.timing).toEqual([
+      {
+        kind: 'expires',
+        conditionId: 'marriedWithin7y',
+        label: '혼인기간 7년 이내',
+        date: '2026-12-01',
+      },
+    ]);
+  });
+  it('P01: 기한이 먼 경우 안내 없음', () => {
+    expect(evaluate(purchaseRule, p01, { asOf }).timing).toEqual([]);
+  });
+  it('J01·J09: 전세도 같은 규칙으로 안내 (기한 먼 경우 없음)', () => {
+    expect(evaluate(jeonseRule, j01, { asOf }).timing).toEqual([]);
+  });
+});
+
 describe('골든: 전세자금 (loan-newlywed-jeonse)', () => {
   runCases(jeonseRule, jeonseCases);
 });

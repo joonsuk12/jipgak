@@ -256,6 +256,8 @@ export interface Rule {
   conditions: ConditionNode;
   limit?: LimitSpec;
   rate?: RateSpec;
+  /** DTI 간이 계산 설정 */
+  dti?: DtiSpec;
   /** 조건이 true일 때 결과에 붙는 안내 */
   notes?: RuleNote[];
   /** 엔진이 판단하지 않고 항상 안내만 하는 항목 (신용도 등) */
@@ -300,9 +302,50 @@ export interface Result {
   rateRange?: { min: number; max: number };
   notes: string[];
   manualChecks: string[];
+  /** 접수일 기준 날짜 안내 (혼인기간 끝나는 날, 결혼 예정자 신청 가능일 등) */
+  timing: TimingNote[];
+  /** DTI 간이 계산 (기존 대출이 없다고 가정) */
+  dti?: DtiEstimate;
+}
+
+/**
+ * 날짜 조건이 곧 바뀌는 경우의 안내.
+ * - expires: 지금은 충족하지만 date 다음 날부터 충족하지 못함 (예: 혼인 7년)
+ * - opens: 지금은 충족하지 못하지만 date부터 충족함 (예: 결혼 예정일 3개월 전)
+ */
+export interface TimingNote {
+  kind: 'expires' | 'opens';
+  conditionId: string;
+  label: string;
+  date: ISODate;
+}
+
+/** DTI 기준으로 빌릴 수 있는 최대 금액 (기존 대출 없음, termYears 원리금균등 가정) */
+export interface DtiEstimate {
+  maxLoan: Won;
+  maxRatio: number;
+  termYears: number;
+  /** 계산에 쓴 연 금리 % */
+  rate: number;
+  /** 계산에 쓴 연소득 */
+  income: Won;
+  /** 1인 소득 기준으로 계산했는지 */
+  singleIncome: boolean;
+}
+
+/** DTI 간이 계산 설정 (규칙 JSON의 dti) */
+export interface DtiSpec {
+  maxRatio: number;
+  termYears: number;
+  incomeFact: string;
+  /** 이 조건이 참이면 singleIncomeFact의 소득으로 계산 (1인 소득 기준 신청) */
+  singleIncomeWhen?: ConditionNode;
+  singleIncomeFact?: string;
 }
 
 export interface EvalOptions {
   /** 판정 기준일 */
   asOf: ISODate;
+  /** 날짜 안내(timing)를 보여 줄 기간. 기본 P3M(3개월) */
+  timingWithin?: string;
 }

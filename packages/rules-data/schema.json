@@ -360,6 +360,31 @@
           }
         }
       }
+    },
+    "dti": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxRatio", "termYears", "incomeFact"],
+      "properties": {
+        "maxRatio": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "termYears": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "incomeFact": {
+          "type": "string"
+        },
+        "singleIncomeWhen": {
+          "$ref": "#/$defs/node"
+        },
+        "singleIncomeFact": {
+          "type": "string"
+        }
+      }
     }
   },
   "$defs": {

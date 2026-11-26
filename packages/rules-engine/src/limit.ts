@@ -1,5 +1,5 @@
 import { type EvalContext, holds, readFact } from './conditions';
-import type { LimitSpec, RateQuote, RateSpec, Won } from './types';
+import type { DtiEstimate, DtiSpec, LimitSpec, RateQuote, RateSpec, Won } from './types';
 
 /** 금액표에서 fact 값(코드)에 맞는 금액. 모르면 표의 최댓값, 표에 없는 코드는 규칙 오류 */
 export function lookupAmount(name: string, ctx: EvalContext): Won {
@@ -110,4 +110,41 @@ export function computeRateRange(
     .filter((r): r is number => r !== undefined);
   if (rates.length === 0) return undefined;
   return { min: Math.min(...rates), max: Math.max(...rates) };
+}
+
+/** 원리금균등 상환에서 대출 1원당 연간 상환액 */
+export function annualPaymentPerWon(ratePct: number, termYears: number): number {
+  const r = ratePct / 100 / 12;
+  const n = termYears * 12;
+  const monthly = r === 0 ? 1 / n : r / (1 - (1 + r) ** -n);
+  return monthly * 12;
+}
+
+/**
+ * DTI 간이 계산: 기존 대출이 없다고 보고, 새 대출의 연간 원리금이 연소득 × maxRatio를 넘지 않는 최대 대출금.
+ * 금리는 rate 설정의 termYears 기간 최종금리(우대·하한 반영)를 씁니다. 소득이나 금리를 모르면 undefined.
+ */
+export function computeDti(
+  spec: DtiSpec,
+  rate: RateSpec | undefined,
+  ctx: EvalContext,
+): DtiEstimate | undefined {
+  if (!rate) return undefined;
+  const single = spec.singleIncomeWhen !== undefined && holds(spec.singleIncomeWhen, ctx);
+  const income = readFact(
+    ctx,
+    single && spec.singleIncomeFact ? spec.singleIncomeFact : spec.incomeFact,
+  );
+  if (typeof income !== 'number' || income <= 0) return undefined;
+  const quote = computeRate(rate, ctx, spec.termYears);
+  if (!quote) return undefined;
+  const perWon = annualPaymentPerWon(quote.finalRate, spec.termYears);
+  return {
+    maxLoan: Math.floor((income * spec.maxRatio) / perWon),
+    maxRatio: spec.maxRatio,
+    termYears: spec.termYears,
+    rate: quote.finalRate,
+    income,
+    singleIncome: single,
+  };
 }
