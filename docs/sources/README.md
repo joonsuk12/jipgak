@@ -7,6 +7,7 @@
 | [newlywed-purchase.md](newlywed-purchase.md) | 신혼부부전용 구입자금 | v1 | 2026-11-17 (2026-11-18 재검증) |
 | [newlywed-jeonse.md](newlywed-jeonse.md) | 신혼부부전용 전세자금 | v1 | 2026-11-17 (2026-11-18 재검증) |
 | [income-and-assets.md](income-and-assets.md) | 소득·순자산·자녀 산정 기준 (공통) | v1 | 2026-11-18 |
+| [official-calculator-check.md](official-calculator-check.md) | 공식 계산 마법사 대조 결과, 지역별 소액임차보증금 표 | v1 | 2026-11-26 |
 | [household-area.md](household-area.md) | 가구원 수별 평균 주거면적 (화면 참고용, 판정에 안 씀) | v1 | 2026-11-24 |
 
 ## 다음 후보 (v1.x ~ v2)
